@@ -7,12 +7,13 @@ export interface IWsAction {
 
 // Espelha o 'WsMessageOut' do schemas.py
 export interface IWsMessage {
-  type: "text" | "suggestion" | "final" | "error";
+  type: "text" | "suggestion" | "final" | "error" | "user"; 
   content: string;
   actions: IWsAction[];
   suggestion_id?: string;
   file_path?: string;
 }
+
 
 // --- Schemas para o Início da Sessão (HTTP) ---
 // Espelha o 'SessionStartRequest' do schemas.py

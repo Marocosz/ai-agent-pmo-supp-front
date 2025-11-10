@@ -1,3 +1,15 @@
+/* --- Container Principal --- */
+/* Este container centraliza nosso formulário/chat */
+.app-container {
+  width: 100%;
+  height: 100%;
+  max-width: 700px; /* O chat fica centralizado */
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
 /* --- Estilo do Formulário de Início --- */
 .start-form {
   background: var(--surface-dark);
@@ -10,7 +22,7 @@
   /* Remove o 'gap' do container principal */
 }
 
-/* --- MUDANÇA: Adiciona espaçamento ao <form> interno --- */
+/* Adiciona espaçamento ao <form> interno */
 .start-form form {
   display: flex;
   flex-direction: column;
@@ -50,7 +62,7 @@
   box-shadow: 0 0 0 3px rgba(58, 134, 255, 0.3);
 }
 
-/* --- MUDANÇA: Botão com 100% de largura e mais espaçado --- */
+/* Botão com 100% de largura e mais espaçado */
 .start-form button {
   padding: 12px;
   background-color: var(--accent-blue);
@@ -62,12 +74,9 @@
   font-weight: 600;
   transition: all 0.2s ease;
   
-  /* --- NOVAS LINHAS --- */
   width: 100%;      /* Faz o botão ter a largura total */
   margin-top: 1rem; /* Adiciona 16px de espaço extra acima do botão */
 }
-/* --- FIM DA MUDANÇA --- */
-
 
 .start-form button:hover {
   opacity: 0.9;
@@ -79,6 +88,7 @@
   cursor: not-allowed;
 }
 
+
 /* --- Estilo da Janela de Chat --- */
 .chat-window {
   background: var(--surface-dark);
@@ -87,7 +97,8 @@
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
   display: flex;
   flex-direction: column;
-  height: 85vh; /* 85% da altura da tela */
+  height: 100%; /* Ocupa 100% do .app-container */
+  width: 100%; /* Ocupa 100% do .app-container */
 }
 
 .chat-header {
@@ -115,6 +126,8 @@
   overflow-y: auto;
   padding: 1.5rem;
   text-align: left;
+  display: flex; /* Adicionado para alinhar balões */
+  flex-direction: column; /* Adicionado para empilhar balões */
 }
 
 /* --- Bolhas de Mensagem --- */
@@ -128,10 +141,28 @@
   line-height: 1.6;
 }
 
+/* Balão do AGENTE (Esquerda) */
+.message-bubble.type-text,
+.message-bubble.type-suggestion,
+.message-bubble.type-validation,
+.message-bubble.type-final,
+.message-bubble.type-error {
+  align-self: flex-start; /* Alinha à esquerda */
+  border-bottom-left-radius: 4px;
+}
+
+/* Balão do USUÁRIO (Direita) */
+.message-bubble.type-user {
+  align-self: flex-end; /* Alinha à direita */
+  background-color: var(--accent-blue-dark); /* Cor azul mais escura para o usuário */
+  color: white;
+  border-bottom-right-radius: 4px;
+}
+
+/* Cores específicas dos balões do Agente */
 .message-bubble.type-text {
   background-color: #333;
   color: var(--text-primary);
-  border-bottom-left-radius: 4px;
 }
 
 .message-bubble.type-suggestion,
@@ -139,7 +170,6 @@
   background-color: #0c3d5e;
   border: 1px solid #1a567c;
   color: #cdeeff;
-  border-bottom-left-radius: 4px;
 }
 
 .message-bubble.type-final {

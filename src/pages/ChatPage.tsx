@@ -1,21 +1,22 @@
 import React, { useState, useEffect, useRef } from "react";
 import { useSession } from "../contexts/SessionContext";
 import { useChatSocket } from "../hooks/useChatSocket";
-import type { ISessionStartRequest } from "../types/chat.types";
+// Adicionamos IWsMessage para criar o balão do usuário
+import type { ISessionStartRequest, IWsMessage } from "../types/chat.types";
 
 /**
  * Componente: O formulário para iniciar uma nova sessão.
+ * (Atualizado com placeholders e valores em branco)
  */
 const StartSessionForm: React.FC = () => {
   const { startSession, status, error } = useSession();
   
-  // --- MUDANÇA: Estado inicial agora está em branco ---
+  // Estado inicial agora está em branco
   const [formData, setFormData] = useState<ISessionStartRequest>({
     tipo_documento: "",
     codificacao: "",
     titulo_documento: "",
   });
-  // --- FIM DA MUDANÇA ---
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -34,7 +35,6 @@ const StartSessionForm: React.FC = () => {
       <h2>Iniciar Novo Documento</h2>
       <form onSubmit={handleSubmit}>
         <div>
-          {/* MUDANÇA: Label e Placeholder atualizados */}
           <label htmlFor="codificacao">Codificação (ex: FO-QUA-001)</label>
           <input
             type="text"
@@ -47,7 +47,6 @@ const StartSessionForm: React.FC = () => {
           />
         </div>
         <div>
-          {/* MUDANÇA: Label e Placeholder atualizados */}
           <label htmlFor="titulo_documento">Título do Documento</label>
           <input
             type="text"
@@ -60,7 +59,6 @@ const StartSessionForm: React.FC = () => {
           />
         </div>
         <div>
-          {/* MUDANÇA: Label e Placeholder atualizados */}
           <label htmlFor="tipo_documento">Tipo de Documento (ex: Formulário, PGP)</label>
           <input
             type="text"
@@ -85,9 +83,10 @@ const StartSessionForm: React.FC = () => {
 
 /**
  * Componente: A janela principal do chat.
+ * (Atualizado com balão do usuário e layout correto)
  */
 const ChatWindow: React.FC = () => {
-  const { messages, sendMessage, isConnecting, isConnected, error } = useChatSocket();
+  const { messages, setMessages, sendMessage, isConnecting, isConnected, error } = useChatSocket();
   const [userMessage, setUserMessage] = useState("");
   const messagesEndRef = useRef<HTMLDivElement>(null); // Ref para auto-scroll
 
@@ -98,7 +97,22 @@ const ChatWindow: React.FC = () => {
 
   const handleSend = () => {
     if (userMessage.trim() && isConnected) {
+      
+      // --- Lógica do Balão do Usuário ---
+      // 1. Cria o objeto da mensagem do usuário
+      const userMsg: IWsMessage = {
+        type: "user", // O novo tipo que estilizamos
+        content: userMessage,
+        actions: [], // Ações vazias
+      };
+      
+      // 2. Adiciona IMEDIATAMENTE o balão do usuário ao chat
+      setMessages((prevMessages) => [...prevMessages, userMsg]);
+      
+      // 3. Envia a mensagem (o texto puro) para o servidor
       sendMessage(userMessage);
+      
+      // 4. Limpa o input
       setUserMessage("");
     }
   };
@@ -130,8 +144,18 @@ const ChatWindow: React.FC = () => {
       <div className="message-list">
         {/* Loop para renderizar as mensagens */}
         {messages.map((msg, index) => (
-          <div key={index} className={`message-bubble type-${msg.type}`}>
-            <p>{msg.content}</p>
+          // O className agora usará `type-user` ou `type-text` etc.
+          <div key={index} className={`message-bubble type-${msg.type}`}> 
+            
+            {/* --- Lógica de Título (Não mostrar "USER:") --- */}
+            {msg.type !== 'user' && (
+              // Mostra o tipo da mensagem (ex: [SUGGESTION])
+              <p><strong>[{msg.type.toUpperCase()}]:</strong> {msg.content}</p>
+            )}
+            {msg.type === 'user' && (
+              <p>{msg.content}</p> // Mensagem do usuário não tem título
+            )}
+            {/* --- FIM DA LÓGICA DE TÍTULO --- */}
             
             {/* Renderiza os botões (Aceitar/Recusar) */}
             {msg.actions && msg.actions.length > 0 && (
