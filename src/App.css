@@ -1,16 +1,17 @@
-/* --- Container Principal --- */
-/* Este container centraliza nosso formulário/chat */
+/* --- 1. Container Principal (Formulário) --- */
+/* Este container SÓ é usado pelo formulário de início */
 .app-container {
   width: 100%;
   height: 100%;
-  max-width: 700px; /* O chat fica centralizado */
+  max-width: 700px; /* O formulário fica centralizado */
   margin: 0 auto;
   display: flex;
   flex-direction: column;
   justify-content: center;
+  padding: 2rem; /* Adiciona o padding que removemos do #root */
 }
 
-/* --- Estilo do Formulário de Início --- */
+/* --- 2. Formulário de Início de Sessão --- */
 .start-form {
   background: var(--surface-dark);
   border: 1px solid var(--border-color);
@@ -19,10 +20,9 @@
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
   display: flex;
   flex-direction: column;
-  /* Remove o 'gap' do container principal */
+  text-align: center;
 }
 
-/* Adiciona espaçamento ao <form> interno */
 .start-form form {
   display: flex;
   flex-direction: column;
@@ -62,7 +62,6 @@
   box-shadow: 0 0 0 3px rgba(58, 134, 255, 0.3);
 }
 
-/* Botão com 100% de largura e mais espaçado */
 .start-form button {
   padding: 12px;
   background-color: var(--accent-blue);
@@ -73,7 +72,6 @@
   font-size: 1rem;
   font-weight: 600;
   transition: all 0.2s ease;
-  
   width: 100%;      /* Faz o botão ter a largura total */
   margin-top: 1rem; /* Adiciona 16px de espaço extra acima do botão */
 }
@@ -89,23 +87,23 @@
 }
 
 
-/* --- Estilo da Janela de Chat --- */
+/* --- 3. Layout da Janela de Chat (Tela Inteira) --- */
 .chat-window {
-  background: var(--surface-dark);
-  border: 1px solid var(--border-color);
-  border-radius: 12px;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
   display: flex;
   flex-direction: column;
-  height: 100%; /* Ocupa 100% do .app-container */
-  width: 100%; /* Ocupa 100% do .app-container */
+  height: 100vh; /* Ocupa 100% da altura da tela */
+  width: 100vw;  /* Ocupa 100% da largura da tela */
+  background: var(--background-dark);
+  align-items: center; /* Centraliza os filhos (header, list, input) */
 }
 
 .chat-header {
   padding: 1rem 1.5rem;
+  background: var(--background-dark);
   border-bottom: 1px solid var(--border-color);
-  background: #2a2a2a;
-  border-radius: 12px 12px 0 0;
+  width: 100%;
+  max-width: 800px;
+  text-align: left;
 }
 
 .chat-header h2 {
@@ -125,20 +123,47 @@
   flex-grow: 1;
   overflow-y: auto;
   padding: 1.5rem;
-  text-align: left;
-  display: flex; /* Adicionado para alinhar balões */
-  flex-direction: column; /* Adicionado para empilhar balões */
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem; /* Espaço entre os balões */
+  width: 100%;
+  max-width: 800px;
 }
 
-/* --- Bolhas de Mensagem --- */
+
+/* --- 4. Bolhas de Mensagem e Persona --- */
 .message-bubble {
-  margin-bottom: 1rem;
-  padding: 12px 18px;
+  padding: 1rem 1.25rem;
   border-radius: 18px;
   max-width: 90%;
   white-space: pre-wrap; 
   word-wrap: break-word; 
   line-height: 1.6;
+  text-align: left;
+}
+
+.agent-persona {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+.agent-persona-icon {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  background-color: var(--accent-blue);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  color: white;
+  font-size: 0.8rem;
+  flex-shrink: 0;
+}
+.agent-persona-name {
+  font-weight: 600;
+  color: var(--text-primary);
 }
 
 /* Balão do AGENTE (Esquerda) */
@@ -147,38 +172,34 @@
 .message-bubble.type-validation,
 .message-bubble.type-final,
 .message-bubble.type-error {
-  align-self: flex-start; /* Alinha à esquerda */
+  align-self: flex-start;
   border-bottom-left-radius: 4px;
+  background-color: var(--surface-dark);
+  color: var(--text-primary);
+  border: 1px solid var(--border-color);
 }
 
 /* Balão do USUÁRIO (Direita) */
 .message-bubble.type-user {
-  align-self: flex-end; /* Alinha à direita */
-  background-color: var(--accent-blue-dark); /* Cor azul mais escura para o usuário */
+  align-self: flex-end; 
+  background-color: var(--accent-blue-dark);
   color: white;
   border-bottom-right-radius: 4px;
 }
 
-/* Cores específicas dos balões do Agente */
-.message-bubble.type-text {
-  background-color: #333;
-  color: var(--text-primary);
-}
-
+/* Cores específicas para balões especiais do Agente */
 .message-bubble.type-suggestion,
 .message-bubble.type-validation {
   background-color: #0c3d5e;
   border: 1px solid #1a567c;
   color: #cdeeff;
 }
-
 .message-bubble.type-final {
   background-color: #1a4d2e;
   border: 1px solid #2a6f47;
   color: #d1ffdf;
   text-align: center;
 }
-
 .message-bubble.type-error {
   background-color: #5c1a1f;
   border: 1px solid #7a2c33;
@@ -192,13 +213,14 @@
   font-weight: 600;
 }
 
-/* --- Botões de Ação (Aceitar/Recusar) --- */
+
+/* --- 5. Botões de Ação (Aceitar/Recusar) --- */
 .action-buttons {
   margin-top: 12px;
   display: flex;
+  flex-wrap: wrap; 
   gap: 10px;
 }
-
 .action-buttons button {
   padding: 8px 15px;
   border: 1px solid var(--accent-blue);
@@ -209,47 +231,63 @@
   font-weight: 600;
   transition: all 0.2s ease;
 }
-
-.action-buttons button:hover {
-  opacity: 0.9;
-}
-
+.action-buttons button:hover { opacity: 0.9; }
 .action-buttons button.reject {
   background-color: var(--surface-dark);
   color: var(--accent-red);
   border-color: var(--accent-red);
 }
-
 .action-buttons button.reject:hover {
   background-color: rgba(255, 77, 77, 0.1);
   opacity: 1;
 }
 
-/* --- Input de Chat --- */
-.chat-input {
+
+/* --- 6. Indicador de "Digitando" --- */
+.typing-indicator {
   display: flex;
-  border-top: 1px solid var(--border-color);
-  padding: 1rem;
-  background-color: #2a2a2a;
-  border-radius: 0 0 12px 12px;
+  align-items: center;
+  width: 100%;
+  max-width: 800px;
+  padding: 0 1.5rem; 
+}
+.typing-indicator-bubble {
+  background-color: var(--surface-dark);
+  border: 1px solid var(--border-color);
+  padding: 12px 18px;
+  border-radius: 18px;
+  border-bottom-left-radius: 4px;
+  color: var(--text-secondary);
+  font-style: italic;
 }
 
+
+/* --- 7. Barra de Input do Chat --- */
+.chat-input-wrapper {
+  width: 100%;
+  max-width: 800px;
+  padding: 1rem 1.5rem 1.5rem 1.5rem;
+  background: var(--background-dark);
+}
+
+.chat-input {
+  display: flex;
+  border: 1px solid var(--border-color);
+  padding: 5px; 
+  background-color: var(--surface-dark);
+  border-radius: 28px;
+}
 .chat-input input {
   flex-grow: 1;
-  background-color: var(--input-bg);
-  border: 1px solid var(--border-color);
+  background-color: transparent; 
+  border: none; 
   color: var(--text-primary);
   border-radius: 20px;
   padding: 12px 18px;
   font-size: 1rem;
   margin-right: 10px;
 }
-
-.chat-input input:focus {
-  outline: none;
-  border-color: var(--accent-blue);
-}
-
+.chat-input input:focus { outline: none; }
 .chat-input button {
   padding: 12px 20px;
   background-color: var(--accent-blue);
@@ -261,11 +299,7 @@
   font-weight: 500;
   transition: all 0.2s ease;
 }
-
-.chat-input button:hover {
-  opacity: 0.9;
-}
-
+.chat-input button:hover { opacity: 0.9; }
 .chat-input button:disabled {
   background-color: #444;
   cursor: not-allowed;
