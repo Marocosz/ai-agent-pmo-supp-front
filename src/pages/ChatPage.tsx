@@ -7,19 +7,17 @@ import type { ISessionStartRequest, IWsMessage } from "../types/chat.types";
  * Componente: O formulário para iniciar uma nova sessão.
  */
 const StartSessionForm: React.FC = () => {
+  // ... (código idêntico ao anterior) ...
   const { startSession, status, error } = useSession();
-  
   const [formData, setFormData] = useState<ISessionStartRequest>({
     tipo_documento: "",
     codificacao: "",
     titulo_documento: "",
   });
-
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
-
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     console.log("Iniciando sessão com:", formData);
@@ -30,6 +28,7 @@ const StartSessionForm: React.FC = () => {
     <div className="start-form">
       <h2>Iniciar Novo Documento</h2>
       <form onSubmit={handleSubmit}>
+        {/* ... (o JSX do formulário é idêntico ao anterior) ... */}
         <div>
           <label htmlFor="codificacao">Codificação (ex: FO-QUA-001)</label>
           <input
@@ -100,34 +99,27 @@ const ChatWindow: React.FC = () => {
 
   const handleSend = () => {
     if (userMessage.trim() && isConnected) {
-      
       const userMsg: IWsMessage = {
         type: "user",
         content: userMessage,
         actions: [],
       };
-      
       setMessages((prevMessages) => [...prevMessages, userMsg]);
       sendMessage(userMessage);
       setUserMessage("");
     }
   };
   
+  // Componente da Persona do Agente
   const AgentPersona: React.FC = () => (
     <div className="agent-persona">
-      <div className="agent-persona-icon">DC</div>
+      <div className="agent-persona-icon">DC</div> {/* Document Creator */}
       <div className="agent-persona-name">Assistente de Documentação</div>
     </div>
   );
   
-  const TypingIndicator: React.FC = () => (
-    <div className="typing-indicator">
-      <div className="agent-persona-icon">DC</div>
-      <div className="typing-indicator-bubble">
-        Digitando...
-      </div>
-    </div>
-  );
+  // (Removemos o componente 'TypingIndicator' daqui,
+  // pois vamos renderizá-lo diretamente no loop)
 
   return (
     <div className="chat-window">
@@ -139,7 +131,7 @@ const ChatWindow: React.FC = () => {
         {messages.map((msg, index) => (
           
           msg.type === 'user' ? (
-            // Balão do Usuário (sem persona)
+            // Balão do Usuário
             <div key={index} className="message-bubble type-user"> 
               <p>{msg.content}</p>
             </div>
@@ -150,6 +142,7 @@ const ChatWindow: React.FC = () => {
               <div className={`message-bubble type-${msg.type}`}> 
                 <p>{msg.content}</p>
                 
+                {/* Botões de Ação */}
                 {msg.actions && msg.actions.length > 0 && (
                   <div className="action-buttons">
                     {msg.actions.map(action => (
@@ -164,6 +157,7 @@ const ChatWindow: React.FC = () => {
                   </div>
                 )}
                 
+                {/* Link de Download */}
                 {msg.type === 'final' && msg.file_path && (
                   <p><strong>Download:</strong> {msg.file_path}</p>
                 )}
@@ -172,8 +166,20 @@ const ChatWindow: React.FC = () => {
           )
         ))}
         
-        {isAgentResponding && <TypingIndicator />}
+        {/* --- MUDANÇA: Indicador de "Digitando..." --- */}
+        {/* Agora ele renderiza a Persona E o balão, 
+            corrigindo o bug do nome sumindo */}
+        {isAgentResponding && (
+          <div className="agent-message-block">
+            <AgentPersona />
+            <div className="typing-indicator-bubble">
+              Digitando...
+            </div>
+          </div>
+        )}
+        {/* --- FIM DA MUDANÇA --- */}
         
+        {/* Erros de Conexão */}
         {error && (
             <div className="agent-message-block">
                 <AgentPersona />
@@ -186,6 +192,7 @@ const ChatWindow: React.FC = () => {
         <div ref={messagesEndRef} />
       </div>
       
+      {/* Input de Chat */}
       <div className="chat-input-wrapper">
         <div className="chat-input">
           <input 
@@ -211,19 +218,16 @@ const ChatWindow: React.FC = () => {
 const ChatPage: React.FC = () => {
   const { sessionId, status } = useSession();
 
-  // --- MUDANÇA PRINCIPAL AQUI ---
   if (sessionId && status === "connected") {
-    // 1. Se a sessão está conectada, renderize o ChatWindow (tela inteira)
     return <ChatWindow />;
   }
 
-  // 2. Se não, renderize o formulário DENTRO do container centralizado
+  // Envolve o formulário no container para centralizá-lo
   return (
     <div className="app-container">
       <StartSessionForm />
     </div>
   );
-  // --- FIM DA MUDANÇA ---
 };
 
 export default ChatPage;

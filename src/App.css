@@ -247,14 +247,15 @@
 .typing-indicator {
   display: flex;
   align-items: center;
-  width: 100%;
-  max-width: 800px;
+  max-width: 90%;
   padding: 0 1.5rem; 
+  gap: 10px;
 }
 .typing-indicator-bubble {
   background-color: var(--surface-dark);
   border: 1px solid var(--border-color);
   padding: 12px 18px;
+  max-width: 90%;
   border-radius: 18px;
   border-bottom-left-radius: 4px;
   color: var(--text-secondary);
