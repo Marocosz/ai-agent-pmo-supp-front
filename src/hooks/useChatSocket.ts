@@ -5,7 +5,7 @@ import type { IWsMessage } from "../types/chat.types";
 const WS_URL_BASE = (import.meta.env.VITE_API_URL || "ws://127.0.0.1:8000")
                     .replace("http", "ws");
 
-// --- MUDANÇA: Constante para o delay mínimo ---
+// Constante para o delay mínimo
 const MIN_TYPING_DELAY = 1000; // 1000ms = 1 segundo
 
 /**
@@ -22,13 +22,15 @@ export const useChatSocket = () => {
   const socketRef = useRef<WebSocket | null>(null);
 
   useEffect(() => {
+    // Só conecta se tivermos um ID e o status da sessão HTTP for "connected"
     if (sessionId && status === "connected") {
       
+      // Impede re-conexões se o hook re-renderizar
       if (socketRef.current) return;
 
       setIsConnecting(true);
       setError(null);
-      setMessages([]);
+      setMessages([]); // Limpa mensagens de sessões anteriores
       console.log(`[useChatSocket] Tentando conectar ao WebSocket: ${WS_URL_BASE}/v1/session/chat/${sessionId}`);
 
       const socket = new WebSocket(`${WS_URL_BASE}/v1/session/chat/${sessionId}`);
@@ -40,7 +42,7 @@ export const useChatSocket = () => {
         console.log("[useChatSocket] Conexão WebSocket estabelecida.");
         setIsConnecting(false);
         setIsConnected(true);
-        // --- MUDANÇA: Inicia o "digitando" para a primeira mensagem ---
+        // Inicia o "digitando" para a primeira mensagem do Agente 1
         setIsAgentResponding(true);
       };
 
@@ -50,7 +52,7 @@ export const useChatSocket = () => {
         setIsConnected(false);
         setIsAgentResponding(false); // Garante que para de "digitar"
         socketRef.current = null;
-        if (event.code !== 1000) { 
+        if (event.code !== 1000) { // 1000 é "Normal Closure" (Geração concluída)
           setError(`Conexão perdida: ${event.reason || 'Erro desconhecido'}`);
         }
       };
@@ -63,15 +65,17 @@ export const useChatSocket = () => {
         setIsAgentResponding(false);
       };
 
-      // --- MUDANÇA: Lógica de 'onmessage' com delay ---
+      // --- Lógica de 'onmessage' (CORRIGIDA) ---
       socket.onmessage = (event) => {
         const messageData: IWsMessage = JSON.parse(event.data);
         console.log("[useChatSocket] Mensagem recebida:", messageData);
 
-        // 1. Mostra o "Digitando..." (se não estiver visível)
-        setIsAgentResponding(true);
+        // A linha 'setIsAgentResponding(true)' foi REMOVIDA daqui.
+        // Isso corrige o bug. O 'isAgentResponding' já está 'true'
+        // (definido pelo sendMessage) e permanecerá 'true'
+        // durante o delay.
 
-        // 2. Espera 1 segundo ANTES de mostrar a mensagem
+        // Espera 1 segundo ANTES de mostrar a mensagem
         setTimeout(() => {
           setIsAgentResponding(false); // Para de "digitar"
           setMessages((prevMessages) => [...prevMessages, messageData]); // Mostra a mensagem
@@ -79,6 +83,7 @@ export const useChatSocket = () => {
       };
       // --- FIM DA MUDANÇA ---
 
+      // Função de Limpeza (quando o componente "desmonta")
       return () => {
         if (socketRef.current && socketRef.current.readyState === WebSocket.OPEN) {
           console.log("[useChatSocket] Limpando e fechando conexão WS.");
@@ -87,7 +92,7 @@ export const useChatSocket = () => {
         socketRef.current = null;
       };
     }
-  }, [sessionId, status]);
+  }, [sessionId, status]); // Dependências do Efeito
 
   /**
    * Função pública para ENVIAR uma mensagem (ou ação) para o Orquestrador
@@ -97,12 +102,11 @@ export const useChatSocket = () => {
       console.log("[useChatSocket] Enviando mensagem:", message);
       socketRef.current.send(message);
       
-      // --- MUDANÇA: Mostra "Digitando..." imediatamente ---
-      // (Ignora se for um clique de botão)
+      // Mostra "Digitando..." imediatamente
+      // (Ignora se for um clique de botão, pois a resposta será instantânea)
       if (!message.startsWith("accept:") && !message.startsWith("reject:")) {
         setIsAgentResponding(true);
       }
-      // --- FIM DA MUDANÇA ---
 
     } else {
       console.error("[useChatSocket] Não é possível enviar: WebSocket não conectado.");
@@ -113,11 +117,11 @@ export const useChatSocket = () => {
   // Retorna tudo o que nossa UI (Página de Chat) vai precisar
   return {
     messages,
-    setMessages, 
+    setMessages, // Exportado para o ChatPage.tsx (balão do usuário)
     sendMessage,
     isConnecting,
     isConnected,
-    isAgentResponding, // O 'ChatPage.tsx' já usa isso
+    isAgentResponding, // Exportado para o ChatPage.tsx (animação de digitação)
     error,
   };
 };

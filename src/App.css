@@ -1,14 +1,42 @@
+/* --- 0. Animações Globais --- */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* --- Fim das Animações --- */
+
+
 /* --- 1. Container Principal (Formulário) --- */
 /* Este container SÓ é usado pelo formulário de início */
 .app-container {
   width: 100%;
   height: 100%;
-  max-width: 700px; /* O formulário fica centralizado */
+  max-width: 700px;
+  /* O formulário fica centralizado */
   margin: 0 auto;
   display: flex;
   flex-direction: column;
   justify-content: center;
-  padding: 2rem; /* Adiciona o padding que removemos do #root */
+  padding: 2rem;
+  /* Adiciona o padding que removemos do #root */
 }
 
 /* --- 2. Formulário de Início de Sessão --- */
@@ -26,11 +54,13 @@
 .start-form form {
   display: flex;
   flex-direction: column;
-  gap: 1rem; /* 16px de espaço ENTRE os campos */
+  gap: 1rem;
+  /* 16px de espaço ENTRE os campos */
 }
 
 .start-form h2 {
-  margin: 0 0 1.5rem 0; /* Aumenta o espaço abaixo do título */
+  margin: 0 0 1.5rem 0;
+  /* Aumenta o espaço abaixo do título */
   color: var(--text-primary);
 }
 
@@ -72,8 +102,10 @@
   font-size: 1rem;
   font-weight: 600;
   transition: all 0.2s ease;
-  width: 100%;      /* Faz o botão ter a largura total */
-  margin-top: 1rem; /* Adiciona 16px de espaço extra acima do botão */
+  width: 100%;
+  /* Faz o botão ter a largura total */
+  margin-top: 1rem;
+  /* Adiciona 16px de espaço extra acima do botão */
 }
 
 .start-form button:hover {
@@ -91,19 +123,29 @@
 .chat-window {
   display: flex;
   flex-direction: column;
-  height: 100vh; /* Ocupa 100% da altura da tela */
-  width: 100vw;  /* Ocupa 100% da largura da tela */
+  height: 100vh;
+  width: 100vw;
   background: var(--background-dark);
-  align-items: center; /* Centraliza os filhos (header, list, input) */
+
+  /* --- CORREÇÃO: Remove o 'align-items' que quebrava o layout --- */
 }
 
 .chat-header {
   padding: 1rem 1.5rem;
+  /* Padding vertical no container */
   background: var(--background-dark);
   border-bottom: 1px solid var(--border-color);
   width: 100%;
-  max-width: 800px;
   text-align: left;
+  /* --- NOVO: Centraliza o *conteúdo* do header --- */
+  display: flex;
+  justify-content: center;
+}
+
+/* --- NOVO: Wrapper de conteúdo para o header --- */
+.chat-header-content {
+  width: 100%;
+  max-width: 800px;
 }
 
 .chat-header h2 {
@@ -115,31 +157,78 @@
 .chat-header-status {
   font-size: 0.8rem;
 }
-.chat-header-status .connecting { color: #f39c12; }
-.chat-header-status .connected { color: var(--accent-green); }
-.chat-header-status .error { color: var(--accent-red); }
 
+.chat-header-status .connecting {
+  color: #f39c12;
+}
+
+.chat-header-status .connected {
+  color: var(--accent-green);
+}
+
+.chat-header-status .error {
+  color: var(--accent-red);
+}
+
+/* --- MUDANÇA: Message-list agora é TELA CHEIA (para o scroll) --- */
 .message-list {
   flex-grow: 1;
   overflow-y: auto;
+  /* O scrollbar agora está aqui (canto direito) */
   padding: 1.5rem;
+  width: 100%;
+
+  /* Estilos do Scrollbar (Firefox) */
+  scrollbar-width: thin;
+  scrollbar-color: #555 var(--surface-dark);
+}
+
+/* --- NOVO: Wrapper de conteúdo para a lista de mensagens --- */
+.message-list-content {
   display: flex;
   flex-direction: column;
-  gap: 1.5rem; /* Espaço entre os balões */
+  gap: 1.5rem;
   width: 100%;
   max-width: 800px;
+  margin: 0 auto;
+  /* Centraliza a conversa */
+}
+
+/* --- 3.5 Estilos do Scrollbar (Chrome, Edge, Safari) --- */
+.message-list::-webkit-scrollbar {
+  width: 8px;
+}
+
+.message-list::-webkit-scrollbar-track {
+  background: var(--surface-dark);
+  border-radius: 4px;
+}
+
+.message-list::-webkit-scrollbar-thumb {
+  background-color: #555;
+  border-radius: 4px;
+  border: 2px solid var(--surface-dark);
+}
+
+.message-list::-webkit-scrollbar-thumb:hover {
+  background-color: #777;
 }
 
 
 /* --- 4. Bolhas de Mensagem e Persona --- */
+.agent-message-block {
+  animation: fadeIn 0.3s ease-out;
+}
+
 .message-bubble {
   padding: 1rem 1.25rem;
   border-radius: 18px;
   max-width: 90%;
-  white-space: pre-wrap; 
-  word-wrap: break-word; 
+  white-space: pre-wrap;
+  word-wrap: break-word;
   line-height: 1.6;
   text-align: left;
+  animation: fadeIn 0.3s ease-out;
 }
 
 .agent-persona {
@@ -148,6 +237,7 @@
   gap: 10px;
   margin-bottom: 12px;
 }
+
 .agent-persona-icon {
   width: 30px;
   height: 30px;
@@ -161,12 +251,12 @@
   font-size: 0.8rem;
   flex-shrink: 0;
 }
+
 .agent-persona-name {
   font-weight: 600;
   color: var(--text-primary);
 }
 
-/* Balão do AGENTE (Esquerda) */
 .message-bubble.type-text,
 .message-bubble.type-suggestion,
 .message-bubble.type-validation,
@@ -179,27 +269,27 @@
   border: 1px solid var(--border-color);
 }
 
-/* Balão do USUÁRIO (Direita) */
 .message-bubble.type-user {
-  align-self: flex-end; 
+  align-self: flex-end;
   background-color: var(--accent-blue-dark);
   color: white;
   border-bottom-right-radius: 4px;
 }
 
-/* Cores específicas para balões especiais do Agente */
 .message-bubble.type-suggestion,
 .message-bubble.type-validation {
   background-color: #0c3d5e;
   border: 1px solid #1a567c;
   color: #cdeeff;
 }
+
 .message-bubble.type-final {
   background-color: #1a4d2e;
   border: 1px solid #2a6f47;
   color: #d1ffdf;
   text-align: center;
 }
+
 .message-bubble.type-error {
   background-color: #5c1a1f;
   border: 1px solid #7a2c33;
@@ -218,9 +308,10 @@
 .action-buttons {
   margin-top: 12px;
   display: flex;
-  flex-wrap: wrap; 
+  flex-wrap: wrap;
   gap: 10px;
 }
+
 .action-buttons button {
   padding: 8px 15px;
   border: 1px solid var(--accent-blue);
@@ -231,12 +322,17 @@
   font-weight: 600;
   transition: all 0.2s ease;
 }
-.action-buttons button:hover { opacity: 0.9; }
+
+.action-buttons button:hover {
+  opacity: 0.9;
+}
+
 .action-buttons button.reject {
   background-color: var(--surface-dark);
   color: var(--accent-red);
   border-color: var(--accent-red);
 }
+
 .action-buttons button.reject:hover {
   background-color: rgba(255, 77, 77, 0.1);
   opacity: 1;
@@ -247,10 +343,11 @@
 .typing-indicator {
   display: flex;
   align-items: center;
-  max-width: 90%;
-  padding: 0 1.5rem; 
+  /* max-width e padding removidos (agora controlados pelo .message-list-content) */
   gap: 10px;
+  animation: fadeIn 0.3s ease-out;
 }
+
 .typing-indicator-bubble {
   background-color: var(--surface-dark);
   border: 1px solid var(--border-color);
@@ -260,35 +357,63 @@
   border-bottom-left-radius: 4px;
   color: var(--text-secondary);
   font-style: italic;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.spinner {
+  width: 16px;
+  height: 16px;
+  border: 2px solid var(--text-secondary);
+  border-top-color: var(--accent-blue);
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
 }
 
 
 /* --- 7. Barra de Input do Chat --- */
 .chat-input-wrapper {
   width: 100%;
-  max-width: 800px;
-  padding: 1rem 1.5rem 1.5rem 1.5rem;
   background: var(--background-dark);
+  /* Adiciona um 'padding-top' para criar espaço */
+  padding-top: 1rem;
+  /* Centraliza o conteúdo do input */
+  display: flex;
+  justify-content: center;
+}
+
+/* NOVO: Container de conteúdo para o Input */
+.chat-input-content {
+  width: 100%;
+  max-width: 800px;
+  padding: 0 1.5rem 1.5rem 1.5rem;
+  /* Padding que estava no wrapper */
 }
 
 .chat-input {
   display: flex;
   border: 1px solid var(--border-color);
-  padding: 5px; 
+  padding: 5px;
   background-color: var(--surface-dark);
   border-radius: 28px;
 }
+
 .chat-input input {
   flex-grow: 1;
-  background-color: transparent; 
-  border: none; 
+  background-color: transparent;
+  border: none;
   color: var(--text-primary);
   border-radius: 20px;
   padding: 12px 18px;
   font-size: 1rem;
   margin-right: 10px;
 }
-.chat-input input:focus { outline: none; }
+
+.chat-input input:focus {
+  outline: none;
+}
+
 .chat-input button {
   padding: 12px 20px;
   background-color: var(--accent-blue);
@@ -300,7 +425,11 @@
   font-weight: 500;
   transition: all 0.2s ease;
 }
-.chat-input button:hover { opacity: 0.9; }
+
+.chat-input button:hover {
+  opacity: 0.9;
+}
+
 .chat-input button:disabled {
   background-color: #444;
   cursor: not-allowed;
