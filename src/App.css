@@ -1,20 +1,25 @@
-/* Estilo do Container Principal */
-#root {
-  max-width: 700px;
-  margin: 0 auto;
-  padding: 2rem;
-  text-align: center;
-}
-
 /* --- Estilo do Formulário de Início --- */
 .start-form {
-  background: #ffffff;
-  border-radius: 8px;
-  padding: 24px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  background: var(--surface-dark);
+  border: 1px solid var(--border-color);
+  border-radius: 12px;
+  padding: 2.5rem;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
   display: flex;
   flex-direction: column;
-  gap: 15px; /* Espaço entre os campos */
+  /* Remove o 'gap' do container principal */
+}
+
+/* --- MUDANÇA: Adiciona espaçamento ao <form> interno --- */
+.start-form form {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem; /* 16px de espaço ENTRE os campos */
+}
+
+.start-form h2 {
+  margin: 0 0 1.5rem 0; /* Aumenta o espaço abaixo do título */
+  color: var(--text-primary);
 }
 
 .start-form div {
@@ -23,162 +28,215 @@
 
 .start-form label {
   display: block;
-  font-weight: 600;
-  margin-bottom: 5px;
+  font-weight: 500;
+  margin-bottom: 8px;
+  color: var(--text-secondary);
+  font-size: 0.9rem;
 }
 
 .start-form input {
   width: 100%;
-  padding: 10px;
-  border: 1px solid #ccc;
-  border-radius: 4px;
+  padding: 12px;
+  background-color: var(--input-bg);
+  border: 1px solid var(--border-color);
+  color: var(--text-primary);
+  border-radius: 8px;
+  font-size: 1rem;
 }
 
+.start-form input:focus {
+  outline: none;
+  border-color: var(--accent-blue);
+  box-shadow: 0 0 0 3px rgba(58, 134, 255, 0.3);
+}
+
+/* --- MUDANÇA: Botão com 100% de largura e mais espaçado --- */
 .start-form button {
   padding: 12px;
-  background-color: #007bff;
+  background-color: var(--accent-blue);
   color: white;
   border: none;
-  border-radius: 4px;
+  border-radius: 8px;
   cursor: pointer;
-  font-size: 16px;
+  font-size: 1rem;
+  font-weight: 600;
+  transition: all 0.2s ease;
+  
+  /* --- NOVAS LINHAS --- */
+  width: 100%;      /* Faz o botão ter a largura total */
+  margin-top: 1rem; /* Adiciona 16px de espaço extra acima do botão */
+}
+/* --- FIM DA MUDANÇA --- */
+
+
+.start-form button:hover {
+  opacity: 0.9;
 }
 
 .start-form button:disabled {
-  background-color: #a0a0a0;
+  background-color: #444;
+  color: #888;
   cursor: not-allowed;
 }
 
-
 /* --- Estilo da Janela de Chat --- */
 .chat-window {
-  background: #ffffff;
-  border-radius: 8px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  background: var(--surface-dark);
+  border: 1px solid var(--border-color);
+  border-radius: 12px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
   display: flex;
   flex-direction: column;
-  height: 80vh; /* 80% da altura da tela */
+  height: 85vh; /* 85% da altura da tela */
 }
 
 .chat-header {
-  padding: 15px;
-  border-bottom: 1px solid #eee;
-  background: #f9f9f9;
-  border-radius: 8px 8px 0 0;
+  padding: 1rem 1.5rem;
+  border-bottom: 1px solid var(--border-color);
+  background: #2a2a2a;
+  border-radius: 12px 12px 0 0;
 }
 
 .chat-header h2 {
   margin: 0;
-  font-size: 1.2rem;
+  font-size: 1.1rem;
+  color: var(--text-primary);
 }
 
 .chat-header-status {
   font-size: 0.8rem;
 }
 .chat-header-status .connecting { color: #f39c12; }
-.chat-header-status .connected { color: #2ecc71; }
-.chat-header-status .error { color: #e74c3c; }
-
+.chat-header-status .connected { color: var(--accent-green); }
+.chat-header-status .error { color: var(--accent-red); }
 
 .message-list {
   flex-grow: 1;
   overflow-y: auto;
-  padding: 20px;
+  padding: 1.5rem;
   text-align: left;
 }
 
 /* --- Bolhas de Mensagem --- */
 .message-bubble {
-  margin-bottom: 15px;
+  margin-bottom: 1rem;
   padding: 12px 18px;
   border-radius: 18px;
-  max-width: 85%;
-  white-space: pre-wrap; /* Preserva quebras de linha */
-  word-wrap: break-word; /* Quebra palavras longas */
+  max-width: 90%;
+  white-space: pre-wrap; 
+  word-wrap: break-word; 
+  line-height: 1.6;
 }
 
 .message-bubble.type-text {
-  background-color: #e9ecef;
-  color: #333;
+  background-color: #333;
+  color: var(--text-primary);
   border-bottom-left-radius: 4px;
 }
 
 .message-bubble.type-suggestion,
 .message-bubble.type-validation {
-  background-color: #d1ecf1;
-  border: 1px solid #bee5eb;
-  color: #0c5460;
+  background-color: #0c3d5e;
+  border: 1px solid #1a567c;
+  color: #cdeeff;
   border-bottom-left-radius: 4px;
 }
 
 .message-bubble.type-final {
-  background-color: #d4edda;
-  border: 1px solid #c3e6cb;
-  color: #155724;
+  background-color: #1a4d2e;
+  border: 1px solid #2a6f47;
+  color: #d1ffdf;
   text-align: center;
 }
 
 .message-bubble.type-error {
-  background-color: #f8d7da;
-  border: 1px solid #f5c6cb;
-  color: #721c24;
+  background-color: #5c1a1f;
+  border: 1px solid #7a2c33;
+  color: #f8d7da;
 }
 
 .message-bubble strong {
   display: block;
-  margin-bottom: 5px;
-  color: #0056b3;
+  margin-bottom: 8px;
+  color: var(--accent-blue);
+  font-weight: 600;
 }
 
 /* --- Botões de Ação (Aceitar/Recusar) --- */
 .action-buttons {
-  margin-top: 10px;
+  margin-top: 12px;
   display: flex;
   gap: 10px;
 }
 
 .action-buttons button {
   padding: 8px 15px;
-  border: 1px solid #007bff;
-  background-color: #007bff;
+  border: 1px solid var(--accent-blue);
+  background-color: var(--accent-blue);
   color: white;
   border-radius: 20px;
   cursor: pointer;
   font-weight: 600;
+  transition: all 0.2s ease;
+}
+
+.action-buttons button:hover {
+  opacity: 0.9;
 }
 
 .action-buttons button.reject {
-  background-color: #ffffff;
-  color: #dc3545;
-  border-color: #dc3545;
+  background-color: var(--surface-dark);
+  color: var(--accent-red);
+  border-color: var(--accent-red);
+}
+
+.action-buttons button.reject:hover {
+  background-color: rgba(255, 77, 77, 0.1);
+  opacity: 1;
 }
 
 /* --- Input de Chat --- */
 .chat-input {
   display: flex;
-  border-top: 1px solid #eee;
-  padding: 15px;
+  border-top: 1px solid var(--border-color);
+  padding: 1rem;
+  background-color: #2a2a2a;
+  border-radius: 0 0 12px 12px;
 }
 
 .chat-input input {
   flex-grow: 1;
-  border: 1px solid #ccc;
+  background-color: var(--input-bg);
+  border: 1px solid var(--border-color);
+  color: var(--text-primary);
   border-radius: 20px;
-  padding: 10px 15px;
+  padding: 12px 18px;
   font-size: 1rem;
   margin-right: 10px;
 }
 
+.chat-input input:focus {
+  outline: none;
+  border-color: var(--accent-blue);
+}
+
 .chat-input button {
-  padding: 10px 20px;
-  background-color: #007bff;
+  padding: 12px 20px;
+  background-color: var(--accent-blue);
   color: white;
   border: none;
   border-radius: 20px;
   cursor: pointer;
   font-size: 1rem;
+  font-weight: 500;
+  transition: all 0.2s ease;
+}
+
+.chat-input button:hover {
+  opacity: 0.9;
 }
 
 .chat-input button:disabled {
-  background-color: #a0a0a0;
+  background-color: #444;
+  cursor: not-allowed;
 }

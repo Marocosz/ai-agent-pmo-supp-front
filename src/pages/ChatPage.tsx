@@ -7,12 +7,15 @@ import type { ISessionStartRequest } from "../types/chat.types";
  * Componente: O formulário para iniciar uma nova sessão.
  */
 const StartSessionForm: React.FC = () => {
-  const { startSession, status, error } = useSession(); // Adiciona 'error'
+  const { startSession, status, error } = useSession();
+  
+  // --- MUDANÇA: Estado inicial agora está em branco ---
   const [formData, setFormData] = useState<ISessionStartRequest>({
-    tipo_documento: "Formulário",
-    codificacao: "FO-TESTE-001",
-    titulo_documento: "Teste de Acesso ao Sistema X",
+    tipo_documento: "",
+    codificacao: "",
+    titulo_documento: "",
   });
+  // --- FIM DA MUDANÇA ---
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -28,36 +31,45 @@ const StartSessionForm: React.FC = () => {
   return (
     // Usa as classes CSS que definimos em App.css
     <div className="start-form">
-      <h2>Iniciar Nova Sessão de Documento</h2>
+      <h2>Iniciar Novo Documento</h2>
       <form onSubmit={handleSubmit}>
         <div>
-          <label htmlFor="codificacao">Codificação:</label>
+          {/* MUDANÇA: Label e Placeholder atualizados */}
+          <label htmlFor="codificacao">Codificação (ex: FO-QUA-001)</label>
           <input
             type="text"
             id="codificacao"
             name="codificacao"
             value={formData.codificacao}
             onChange={handleChange}
+            placeholder="Digite o código do documento..."
+            required 
           />
         </div>
         <div>
-          <label htmlFor="titulo_documento">Título do Documento:</label>
+          {/* MUDANÇA: Label e Placeholder atualizados */}
+          <label htmlFor="titulo_documento">Título do Documento</label>
           <input
             type="text"
             id="titulo_documento"
             name="titulo_documento"
             value={formData.titulo_documento}
             onChange={handleChange}
+            placeholder="Ex: Padrão de Acesso ao Sistema..."
+            required
           />
         </div>
         <div>
-          <label htmlFor="tipo_documento">Tipo de Documento:</label>
+          {/* MUDANÇA: Label e Placeholder atualizados */}
+          <label htmlFor="tipo_documento">Tipo de Documento (ex: Formulário, PGP)</label>
           <input
             type="text"
             id="tipo_documento"
             name="tipo_documento"
             value={formData.tipo_documento}
             onChange={handleChange}
+            placeholder="Digite o tipo do documento..."
+            required
           />
         </div>
         <button type="submit" disabled={status === "connecting"}>
