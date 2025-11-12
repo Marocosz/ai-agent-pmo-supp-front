@@ -2,11 +2,13 @@ import React, { useState, useEffect, useRef } from "react";
 import { useSession } from "../contexts/SessionContext";
 import { useChatSocket } from "../hooks/useChatSocket";
 import type { ISessionStartRequest, IWsMessage } from "../types/chat.types";
+import ReactMarkdown from 'react-markdown'; // <-- 1. IMPORTADO
 
 /**
  * Componente: O formulário para iniciar uma nova sessão.
  */
 const StartSessionForm: React.FC = () => {
+    // ... (Este componente permanece 100% igual)
     const { startSession, status, error } = useSession();
     const [formData, setFormData] = useState<ISessionStartRequest>({
         tipo_documento: "",
@@ -80,6 +82,7 @@ const StartSessionForm: React.FC = () => {
  * Componente: A janela principal do chat.
  */
 const ChatWindow: React.FC = () => {
+    // ... (Hooks, states, handlers, e sub-componentes permanecem 100% iguais)
     const {
         messages,
         setMessages,
@@ -111,14 +114,10 @@ const ChatWindow: React.FC = () => {
     };
 
     const handleActionClick = (messageIndex: number, actionValue: string) => {
-        // 1. Envia a ação para o backend
         sendMessage(actionValue);
-
-        // 2. Atualiza o estado local das mensagens para desativar os botões
         setMessages((prevMessages) =>
             prevMessages.map((msg, index) => {
                 if (index === messageIndex) {
-                    // Adiciona a propriedade 'selectedActionValue' à mensagem específica
                     return { ...msg, selectedActionValue: actionValue };
                 }
                 return msg;
@@ -144,20 +143,15 @@ const ChatWindow: React.FC = () => {
     );
 
     const ProcessingIndicator: React.FC<{ content: string }> = ({ content }) => (
-        <div className="typing-indicator"> {/* Reusa a mesma classe de layout */}
+        <div className="typing-indicator">
             <div className="agent-persona-icon">DC</div>
             <div className="typing-indicator-bubble">
                 <div className="spinner"></div>
-                {/* Usa o conteúdo da mensagem (ex: "Processando documento...") */}
                 <span>{content || "Processando..."}</span>
             </div>
         </div>
     );
 
-    /**
-     * Um ícone SVG embutido para "documento".
-     * Não requer bibliotecas externas.
-     */
     const DocumentIcon: React.FC = () => (
         <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -165,7 +159,7 @@ const ChatWindow: React.FC = () => {
             height="18"
             viewBox="0 0 24 24"
             fill="none"
-            stroke="currentColor" // Herdará a cor do texto do CSS
+            stroke="currentColor"
             strokeWidth="2"
             strokeLinecap="round"
             strokeLinejoin="round"
@@ -192,21 +186,26 @@ const ChatWindow: React.FC = () => {
 
                         msg.type === 'user' ? (
                             <div key={index} className="message-bubble type-user">
+                                {/* O balão do usuário continua sendo um <p> simples */}
                                 <p>{msg.content}</p>
                             </div>
-                            // Novo tipo "processing"
                         ) : msg.type === 'processing' ? (
                             <div key={index} className="agent-message-block">
                                 <ProcessingIndicator content={msg.content} />
                             </div>
-                            // Tipos restantes do agente
                         ) : (
                             <div key={index} className="agent-message-block">
                                 <AgentPersona />
                                 <div className={`message-bubble type-${msg.type}`}>
-                                    <p>{msg.content}</p>
 
-                                    {/* Lógica dos botões (sem mudança) */}
+                                    {/* --- 2. AQUI ESTÁ A MUDANÇA --- */}
+                                    {/* Substituímos <p>{msg.content}</p> por isto: */}
+                                    <ReactMarkdown>
+                                        {msg.content}
+                                    </ReactMarkdown>
+                                    {/* --- FIM DA MUDANÇA --- */}
+
+                                    {/* O resto (botões e chip) continua igual */}
                                     {msg.actions && msg.actions.length > 0 && (
                                         <div className="action-buttons">
                                             {msg.actions.map(action => {
@@ -232,20 +231,17 @@ const ChatWindow: React.FC = () => {
                                         </div>
                                     )}
 
-                                    {/* --- INÍCIO DA MUDANÇA: "Chip" de Download --- */}
-                                    {/* Esta é a única parte que mudou do código que você me enviou */}
                                     {msg.type === 'final' && msg.file_path && (
                                         <a
                                             href={`${import.meta.env.VITE_API_URL || "http://127.0.0.1:8000"}/v1/download/${msg.file_path}`}
                                             target="_blank"
                                             rel="noopener noreferrer"
-                                            className="download-chip" // Nova classe
+                                            className="download-chip"
                                         >
                                             <DocumentIcon />
                                             <span>{msg.file_path}</span>
                                         </a>
                                     )}
-                                    {/* --- FIM DA MUDANÇA --- */}
                                 </div>
                             </div>
                         )

@@ -25,18 +25,15 @@
 
 
 /* --- 1. Container Principal (Formulário) --- */
-/* Este container SÓ é usado pelo formulário de início */
 .app-container {
   width: 100%;
   height: 100%;
   max-width: 700px;
-  /* O formulário fica centralizado */
   margin: 0 auto;
   display: flex;
   flex-direction: column;
   justify-content: center;
   padding: 2rem;
-  /* Adiciona o padding que removemos do #root */
 }
 
 /* --- 2. Formulário de Início de Sessão --- */
@@ -55,12 +52,10 @@
   display: flex;
   flex-direction: column;
   gap: 1rem;
-  /* 16px de espaço ENTRE os campos */
 }
 
 .start-form h2 {
   margin: 0 0 1.5rem 0;
-  /* Aumenta o espaço abaixo do título */
   color: var(--text-primary);
 }
 
@@ -103,9 +98,7 @@
   font-weight: 600;
   transition: all 0.2s ease;
   width: 100%;
-  /* Faz o botão ter a largura total */
   margin-top: 1rem;
-  /* Adiciona 16px de espaço extra acima do botão */
 }
 
 .start-form button:hover {
@@ -126,23 +119,18 @@
   height: 100vh;
   width: 100vw;
   background: var(--background-dark);
-
-  /* --- CORREÇÃO: Remove o 'align-items' que quebrava o layout --- */
 }
 
 .chat-header {
   padding: 1rem 1.5rem;
-  /* Padding vertical no container */
   background: var(--background-dark);
   border-bottom: 1px solid var(--border-color);
   width: 100%;
   text-align: left;
-  /* --- NOVO: Centraliza o *conteúdo* do header --- */
   display: flex;
   justify-content: center;
 }
 
-/* --- NOVO: Wrapper de conteúdo para o header --- */
 .chat-header-content {
   width: 100%;
   max-width: 800px;
@@ -170,20 +158,15 @@
   color: var(--accent-red);
 }
 
-/* --- MUDANÇA: Message-list agora é TELA CHEIA (para o scroll) --- */
 .message-list {
   flex-grow: 1;
   overflow-y: auto;
-  /* O scrollbar agora está aqui (canto direito) */
   padding: 1.5rem;
   width: 100%;
-
-  /* Estilos do Scrollbar (Firefox) */
   scrollbar-width: thin;
   scrollbar-color: #555 var(--surface-dark);
 }
 
-/* --- NOVO: Wrapper de conteúdo para a lista de mensagens --- */
 .message-list-content {
   display: flex;
   flex-direction: column;
@@ -191,7 +174,6 @@
   width: 100%;
   max-width: 800px;
   margin: 0 auto;
-  /* Centraliza a conversa */
 }
 
 /* --- 3.5 Estilos do Scrollbar (Chrome, Edge, Safari) --- */
@@ -257,6 +239,7 @@
   color: var(--text-primary);
 }
 
+/* Este é o estilo PADRÃO para todas as bolhas do bot */
 .message-bubble.type-text,
 .message-bubble.type-suggestion,
 .message-bubble.type-validation,
@@ -276,13 +259,18 @@
   border-bottom-right-radius: 4px;
 }
 
+/* --- INÍCIO DA MUDANÇA ---
+O bloco de código que estava aqui foi REMOVIDO.
+Este bloco definia um fundo azul para:
 .message-bubble.type-suggestion,
-.message-bubble.type-validation {
-  background-color: #0c3d5e;
-  border: 1px solid #1a567c;
-  color: #cdeeff;
-}
+.message-bubble.type-validation 
 
+Ao removê-lo, esses balões agora usarão o estilo padrão (cinza) 
+definido acima, que é o que queríamos.
+--- FIM DA MUDANÇA ---
+*/
+
+/* Este (verde) permanece, como você pediu */
 .message-bubble.type-final {
   background-color: #1a4d2e;
   border: 1px solid #2a6f47;
@@ -290,19 +278,31 @@
   text-align: center;
 }
 
+/* Este (vermelho) também permanece, pois é um estado crítico */
 .message-bubble.type-error {
   background-color: #5c1a1f;
   border: 1px solid #7a2c33;
   color: #f8d7da;
 }
 
-.message-bubble strong {
-  display: block;
-  margin-bottom: 8px;
-  color: var(--accent-blue);
-  font-weight: 600;
+/* Remove margens do react-markdown */
+.message-bubble p {
+    margin-top: 0;
+    margin-bottom: 0;
 }
-
+.message-bubble p + p {
+    margin-top: 1rem;
+}
+.message-bubble ul,
+.message-bubble ol {
+    padding-left: 20px;
+    margin-top: 0.5rem;
+    margin-bottom: 0.5rem;
+}
+.message-bubble li {
+    line-height: 1.6;
+    margin-bottom: 4px;
+}
 
 /* --- 5. Botões de Ação (Aceitar/Recusar) --- */
 .action-buttons {
@@ -354,8 +354,6 @@
   border-color: var(--border-color);
 }
 
-/* O botão que FOI clicado (seja azul ou vermelho) 
-   simplesmente usará o estado 'disabled' padrão */
 .action-buttons button:disabled {
   cursor: not-allowed;
 }
@@ -365,7 +363,6 @@
 .typing-indicator {
   display: flex;
   align-items: center;
-  /* max-width e padding removidos (agora controlados pelo .message-list-content) */
   gap: 10px;
   animation: fadeIn 0.3s ease-out;
 }
@@ -398,19 +395,15 @@
 .chat-input-wrapper {
   width: 100%;
   background: var(--background-dark);
-  /* Adiciona um 'padding-top' para criar espaço */
   padding-top: 1rem;
-  /* Centraliza o conteúdo do input */
   display: flex;
   justify-content: center;
 }
 
-/* NOVO: Container de conteúdo para o Input */
 .chat-input-content {
   width: 100%;
   max-width: 800px;
   padding: 0 1.5rem 1.5rem 1.5rem;
-  /* Padding que estava no wrapper */
 }
 
 .chat-input {
@@ -457,41 +450,63 @@
   cursor: not-allowed;
 }
 
-/* --- 8. Download Chip --- */
-/* (Substitui o .download-link que criamos antes) */
 
+/* --- 8. Download Chip --- */
 .download-chip {
-    display: inline-flex; /* Chave para alinhar o ícone e o texto */
+    display: inline-flex; 
     align-items: center;
-    gap: 10px; /* Espaço entre o ícone e o texto */
+    gap: 10px;
     
-    /* Aparência de "chip" */
-    background-color: var(--background-dark); /* Cor de fundo mais escura */
+    background-color: var(--background-dark);
     border: 1px solid var(--border-color);
-    border-radius: 20px; /* Mais arredondado */
+    border-radius: 20px;
     padding: 8px 14px;
-    margin-top: 12px; /* Espaço acima do chip */
+    margin-top: 12px;
     
-    color: var(--text-secondary); /* Cor do texto (nome do arquivo) */
+    color: var(--text-secondary);
     font-weight: 500;
     font-size: 0.9rem;
     
-    text-decoration: none; /* Remove o sublinhado do link <a> */
+    text-decoration: none;
     transition: all 0.2s ease;
 }
 
-/* Efeito de hover */
 .download-chip:hover {
-    background-color: var(--border-color); /* Fica um pouco mais claro */
+    background-color: var(--border-color);
     border-color: var(--accent-blue);
-    color: var(--accent-blue); /* Texto e ícone ficam azuis */
+    color: var(--accent-blue);
 }
 
-/* Estilo para o ícone SVG dentro do chip */
 .download-chip svg {
     width: 18px;
     height: 18px;
-    /* O 'stroke' é 'currentColor' no SVG, 
-       então ele herdará a cor do 'color' (azul no hover) */
-    flex-shrink: 0; /* Impede que o ícone encolha */
+    flex-shrink: 0;
+}
+
+/* --- 9. Estilos do ReactMarkdown --- */
+/* (Eu adicionei os estilos de markdown que discutimos na 
+   conversa anterior aqui, pois eles já estavam no meu histórico) */
+
+/* Remove margens indesejadas de parágrafos dentro da bolha */
+.message-bubble p {
+    margin-top: 0;
+    margin-bottom: 0;
+}
+
+/* Adiciona um espaço *entre* parágrafos (se houver mais de um) */
+.message-bubble p + p {
+    margin-top: 1rem;
+}
+
+/* Estiliza listas (ul) e itens de lista (li) */
+.message-bubble ul,
+.message-bubble ol {
+    padding-left: 20px; /* Adiciona recuo */
+    margin-top: 0.5rem;
+    margin-bottom: 0.5rem;
+}
+
+.message-bubble li {
+    line-height: 1.6;
+    margin-bottom: 4px;
 }
