@@ -7,7 +7,7 @@ export interface IWsAction {
 
 // Espelha o 'WsMessageOut' do schemas.py
 export interface IWsMessage {
-  type: "text" | "suggestion" | "final" | "error" | "user"; 
+  type: "text" | "suggestion" | "final" | "error" | "user" | "processing";
   content: string;
   actions: IWsAction[];
   suggestion_id?: string;

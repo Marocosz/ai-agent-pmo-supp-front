@@ -82,7 +82,7 @@ const StartSessionForm: React.FC = () => {
 const ChatWindow: React.FC = () => {
     const {
         messages,
-        setMessages, // <-- Importante, estamos usando isso agora
+        setMessages,
         sendMessage,
         isConnecting,
         isConnected,
@@ -110,10 +110,6 @@ const ChatWindow: React.FC = () => {
         }
     };
 
-    // --- INÍCIO DA MUDANÇA ---
-    /**
-     * Lida com o clique em um botão de ação (ex: Aprovar, Aceitar, Recusar)
-     */
     const handleActionClick = (messageIndex: number, actionValue: string) => {
         // 1. Envia a ação para o backend
         sendMessage(actionValue);
@@ -129,7 +125,6 @@ const ChatWindow: React.FC = () => {
             })
         );
     };
-    // --- FIM DA MUDANÇA ---
 
     const AgentPersona: React.FC = () => (
         <div className="agent-persona">
@@ -148,6 +143,19 @@ const ChatWindow: React.FC = () => {
         </div>
     );
 
+    // --- INÍCIO DA MUDANÇA 1: Novo componente indicador ---
+    const ProcessingIndicator: React.FC<{ content: string }> = ({ content }) => (
+        <div className="typing-indicator"> {/* Reusa a mesma classe de layout */}
+            <div className="agent-persona-icon">DC</div>
+            <div className="typing-indicator-bubble">
+                <div className="spinner"></div>
+                {/* Usa o conteúdo da mensagem (ex: "Processando documento...") */}
+                <span>{content || "Processando..."}</span>
+            </div>
+        </div>
+    );
+    // --- FIM DA MUDANÇA 1 ---
+
     return (
         <div className="chat-window">
             <div className="chat-header">
@@ -158,24 +166,31 @@ const ChatWindow: React.FC = () => {
 
             <div className="message-list">
                 <div className="message-list-content">
-                    {/* --- INÍCIO DA MUDANÇA: Adicionado 'index' ao map --- */}
+                    
                     {messages.map((msg, index) => (
 
+                        // --- INÍCIO DA MUDANÇA 2: Lógica de renderização ---
                         msg.type === 'user' ? (
                             <div key={index} className="message-bubble type-user">
                                 <p>{msg.content}</p>
                             </div>
+                        // Novo tipo "processing"
+                        ) : msg.type === 'processing' ? (
+                            <div key={index} className="agent-message-block">
+                                <ProcessingIndicator content={msg.content} />
+                            </div>
+                        // Tipos restantes do agente
                         ) : (
+                        // --- FIM DA MUDANÇA 2 ---
                             <div key={index} className="agent-message-block">
                                 <AgentPersona />
                                 <div className={`message-bubble type-${msg.type}`}>
                                     <p>{msg.content}</p>
 
-                                    {/* --- INÍCIO DA MUDANÇA: Lógica dos botões atualizada --- */}
+                                    {/* Lógica dos botões (sem mudança) */}
                                     {msg.actions && msg.actions.length > 0 && (
                                         <div className="action-buttons">
                                             {msg.actions.map(action => {
-                                                // Lógica para classes e disabled
                                                 const isSelected = msg.selectedActionValue === action.value;
                                                 const isOtherActionClicked = msg.selectedActionValue && !isSelected;
 
@@ -187,11 +202,9 @@ const ChatWindow: React.FC = () => {
                                                 return (
                                                     <button
                                                         key={action.value}
-                                                        // Chama a nova função com o índice da mensagem
                                                         onClick={() => handleActionClick(index, action.value)}
-                                                        // Desativa TODOS os botões se UM já foi clicado
                                                         disabled={!!msg.selectedActionValue}
-                                                        className={buttonClass.trim()} // Usa a classe dinâmica
+                                                        className={buttonClass.trim()}
                                                     >
                                                         {action.label}
                                                     </button>
@@ -199,16 +212,26 @@ const ChatWindow: React.FC = () => {
                                             })}
                                         </div>
                                     )}
-                                    {/* --- FIM DA MUDANÇA --- */}
 
+                                    {/* --- INÍCIO DA MUDANÇA 3: Link de Download --- */}
                                     {msg.type === 'final' && msg.file_path && (
-                                        <p><strong>Download:</strong> {msg.file_path}</p>
+                                        <div className="download-link">
+                                            <p><strong>Download:</strong></p>
+                                            <a
+                                                // Constrói a URL completa para o endpoint de download
+                                                href={`${import.meta.env.VITE_API_URL || "http://127.0.0.1:8000"}/v1/download/${msg.file_path}`}
+                                                target="_blank" // Abre em nova aba
+                                                rel="noopener noreferrer"
+                                            >
+                                                {msg.file_path} {/* Mostra só o nome do arquivo */}
+                                            </a>
+                                        </div>
                                     )}
+                                    {/* --- FIM DA MUDANÇA 3 --- */}
                                 </div>
                             </div>
                         )
                     ))}
-                    {/* --- FIM DA MUDANÇA --- */}
 
                     {isAgentResponding && (
                         <div className="agent-message-block">
