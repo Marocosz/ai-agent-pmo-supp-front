@@ -12,6 +12,7 @@ export interface IWsMessage {
   actions: IWsAction[];
   suggestion_id?: string;
   file_path?: string;
+  selectedActionValue?: string;
 }
 
 

@@ -82,7 +82,7 @@ const StartSessionForm: React.FC = () => {
 const ChatWindow: React.FC = () => {
     const {
         messages,
-        setMessages,
+        setMessages, // <-- Importante, estamos usando isso agora
         sendMessage,
         isConnecting,
         isConnected,
@@ -91,7 +91,6 @@ const ChatWindow: React.FC = () => {
     } = useChatSocket();
 
     const [userMessage, setUserMessage] = useState("");
-    // MUDANÇA: O Ref agora é do container *interno* da lista
     const messagesEndRef = useRef<HTMLDivElement>(null);
 
     useEffect(() => {
@@ -110,6 +109,27 @@ const ChatWindow: React.FC = () => {
             setUserMessage("");
         }
     };
+
+    // --- INÍCIO DA MUDANÇA ---
+    /**
+     * Lida com o clique em um botão de ação (ex: Aprovar, Aceitar, Recusar)
+     */
+    const handleActionClick = (messageIndex: number, actionValue: string) => {
+        // 1. Envia a ação para o backend
+        sendMessage(actionValue);
+
+        // 2. Atualiza o estado local das mensagens para desativar os botões
+        setMessages((prevMessages) =>
+            prevMessages.map((msg, index) => {
+                if (index === messageIndex) {
+                    // Adiciona a propriedade 'selectedActionValue' à mensagem específica
+                    return { ...msg, selectedActionValue: actionValue };
+                }
+                return msg;
+            })
+        );
+    };
+    // --- FIM DA MUDANÇA ---
 
     const AgentPersona: React.FC = () => (
         <div className="agent-persona">
@@ -130,17 +150,15 @@ const ChatWindow: React.FC = () => {
 
     return (
         <div className="chat-window">
-            {/* --- MUDANÇA: Header com container interno --- */}
             <div className="chat-header">
                 <div className="chat-header-content">
                     <h2>Chat de Geração de Documento</h2>
                 </div>
             </div>
-            {/* --- FIM DA MUDANÇA --- */}
 
-            {/* --- MUDANÇA: Lista de mensagens agora tem um wrapper interno --- */}
             <div className="message-list">
                 <div className="message-list-content">
+                    {/* --- INÍCIO DA MUDANÇA: Adicionado 'index' ao map --- */}
                     {messages.map((msg, index) => (
 
                         msg.type === 'user' ? (
@@ -153,19 +171,35 @@ const ChatWindow: React.FC = () => {
                                 <div className={`message-bubble type-${msg.type}`}>
                                     <p>{msg.content}</p>
 
+                                    {/* --- INÍCIO DA MUDANÇA: Lógica dos botões atualizada --- */}
                                     {msg.actions && msg.actions.length > 0 && (
                                         <div className="action-buttons">
-                                            {msg.actions.map(action => (
-                                                <button
-                                                    key={action.value}
-                                                    onClick={() => sendMessage(action.value)}
-                                                    className={action.value.startsWith("reject") ? "reject" : ""}
-                                                >
-                                                    {action.label}
-                                                </button>
-                                            ))}
+                                            {msg.actions.map(action => {
+                                                // Lógica para classes e disabled
+                                                const isSelected = msg.selectedActionValue === action.value;
+                                                const isOtherActionClicked = msg.selectedActionValue && !isSelected;
+
+                                                let buttonClass = action.value.startsWith("reject") ? "reject" : "";
+                                                if (isOtherActionClicked) {
+                                                    buttonClass += " inactive";
+                                                }
+
+                                                return (
+                                                    <button
+                                                        key={action.value}
+                                                        // Chama a nova função com o índice da mensagem
+                                                        onClick={() => handleActionClick(index, action.value)}
+                                                        // Desativa TODOS os botões se UM já foi clicado
+                                                        disabled={!!msg.selectedActionValue}
+                                                        className={buttonClass.trim()} // Usa a classe dinâmica
+                                                    >
+                                                        {action.label}
+                                                    </button>
+                                                );
+                                            })}
                                         </div>
                                     )}
+                                    {/* --- FIM DA MUDANÇA --- */}
 
                                     {msg.type === 'final' && msg.file_path && (
                                         <p><strong>Download:</strong> {msg.file_path}</p>
@@ -174,6 +208,7 @@ const ChatWindow: React.FC = () => {
                             </div>
                         )
                     ))}
+                    {/* --- FIM DA MUDANÇA --- */}
 
                     {isAgentResponding && (
                         <div className="agent-message-block">
@@ -193,9 +228,7 @@ const ChatWindow: React.FC = () => {
                     <div ref={messagesEndRef} />
                 </div>
             </div>
-            {/* --- FIM DA MUDANÇA --- */}
 
-            {/* --- MUDANÇA: Input de chat com container interno --- */}
             <div className="chat-input-wrapper">
                 <div className="chat-input-content">
                     <div className="chat-input">
@@ -213,7 +246,6 @@ const ChatWindow: React.FC = () => {
                     </div>
                 </div>
             </div>
-            {/* --- FIM DA MUDANÇA --- */}
         </div>
     );
 };

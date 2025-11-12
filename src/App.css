@@ -338,6 +338,28 @@
   opacity: 1;
 }
 
+/* Estilo para botões inativos (os que não foram clicados) */
+.action-buttons button.inactive {
+  background-color: var(--surface-dark);
+  color: var(--text-secondary);
+  border-color: var(--border-color);
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* Garante que o 'reject' inativo também fique cinza */
+.action-buttons button.reject.inactive {
+  background-color: var(--surface-dark);
+  color: var(--text-secondary);
+  border-color: var(--border-color);
+}
+
+/* O botão que FOI clicado (seja azul ou vermelho) 
+   simplesmente usará o estado 'disabled' padrão */
+.action-buttons button:disabled {
+  cursor: not-allowed;
+}
+
 
 /* --- 6. Indicador de "Digitando" --- */
 .typing-indicator {
