@@ -143,7 +143,6 @@ const ChatWindow: React.FC = () => {
         </div>
     );
 
-    // --- INÍCIO DA MUDANÇA 1: Novo componente indicador ---
     const ProcessingIndicator: React.FC<{ content: string }> = ({ content }) => (
         <div className="typing-indicator"> {/* Reusa a mesma classe de layout */}
             <div className="agent-persona-icon">DC</div>
@@ -154,7 +153,29 @@ const ChatWindow: React.FC = () => {
             </div>
         </div>
     );
-    // --- FIM DA MUDANÇA 1 ---
+
+    /**
+     * Um ícone SVG embutido para "documento".
+     * Não requer bibliotecas externas.
+     */
+    const DocumentIcon: React.FC = () => (
+        <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="18"
+            height="18"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor" // Herdará a cor do texto do CSS
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+        >
+            <path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z" />
+            <polyline points="14 2 14 8 20 8" />
+            <line x1="16" y1="13" x2="8" y2="13" />
+            <line x1="16" y1="17" x2="8" y2="17" />
+            <line x1="10" y1="9" x2="8" y2="9" />
+        </svg>);
 
     return (
         <div className="chat-window">
@@ -166,22 +187,20 @@ const ChatWindow: React.FC = () => {
 
             <div className="message-list">
                 <div className="message-list-content">
-                    
+
                     {messages.map((msg, index) => (
 
-                        // --- INÍCIO DA MUDANÇA 2: Lógica de renderização ---
                         msg.type === 'user' ? (
                             <div key={index} className="message-bubble type-user">
                                 <p>{msg.content}</p>
                             </div>
-                        // Novo tipo "processing"
+                            // Novo tipo "processing"
                         ) : msg.type === 'processing' ? (
                             <div key={index} className="agent-message-block">
                                 <ProcessingIndicator content={msg.content} />
                             </div>
-                        // Tipos restantes do agente
+                            // Tipos restantes do agente
                         ) : (
-                        // --- FIM DA MUDANÇA 2 ---
                             <div key={index} className="agent-message-block">
                                 <AgentPersona />
                                 <div className={`message-bubble type-${msg.type}`}>
@@ -213,21 +232,20 @@ const ChatWindow: React.FC = () => {
                                         </div>
                                     )}
 
-                                    {/* --- INÍCIO DA MUDANÇA 3: Link de Download --- */}
+                                    {/* --- INÍCIO DA MUDANÇA: "Chip" de Download --- */}
+                                    {/* Esta é a única parte que mudou do código que você me enviou */}
                                     {msg.type === 'final' && msg.file_path && (
-                                        <div className="download-link">
-                                            <p><strong>Download:</strong></p>
-                                            <a
-                                                // Constrói a URL completa para o endpoint de download
-                                                href={`${import.meta.env.VITE_API_URL || "http://127.0.0.1:8000"}/v1/download/${msg.file_path}`}
-                                                target="_blank" // Abre em nova aba
-                                                rel="noopener noreferrer"
-                                            >
-                                                {msg.file_path} {/* Mostra só o nome do arquivo */}
-                                            </a>
-                                        </div>
+                                        <a
+                                            href={`${import.meta.env.VITE_API_URL || "http://127.0.0.1:8000"}/v1/download/${msg.file_path}`}
+                                            target="_blank"
+                                            rel="noopener noreferrer"
+                                            className="download-chip" // Nova classe
+                                        >
+                                            <DocumentIcon />
+                                            <span>{msg.file_path}</span>
+                                        </a>
                                     )}
-                                    {/* --- FIM DA MUDANÇA 3 --- */}
+                                    {/* --- FIM DA MUDANÇA --- */}
                                 </div>
                             </div>
                         )

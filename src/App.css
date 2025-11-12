@@ -457,24 +457,41 @@
   cursor: not-allowed;
 }
 
-/* --- 8. Link de Download (Opcional) --- */
-.download-link {
-  margin-top: 1rem;
-  text-align: center;
-  padding: 0.5rem;
-  background: rgba(255, 255, 255, 0.05);
-  border-radius: 8px;
-  border: 1px solid var(--border-color);
+/* --- 8. Download Chip --- */
+/* (Substitui o .download-link que criamos antes) */
+
+.download-chip {
+    display: inline-flex; /* Chave para alinhar o ícone e o texto */
+    align-items: center;
+    gap: 10px; /* Espaço entre o ícone e o texto */
+    
+    /* Aparência de "chip" */
+    background-color: var(--background-dark); /* Cor de fundo mais escura */
+    border: 1px solid var(--border-color);
+    border-radius: 20px; /* Mais arredondado */
+    padding: 8px 14px;
+    margin-top: 12px; /* Espaço acima do chip */
+    
+    color: var(--text-secondary); /* Cor do texto (nome do arquivo) */
+    font-weight: 500;
+    font-size: 0.9rem;
+    
+    text-decoration: none; /* Remove o sublinhado do link <a> */
+    transition: all 0.2s ease;
 }
 
-.download-link p {
-  margin: 0 0 0.25rem 0;
-  font-weight: 600;
-  color: var(--text-secondary);
+/* Efeito de hover */
+.download-chip:hover {
+    background-color: var(--border-color); /* Fica um pouco mais claro */
+    border-color: var(--accent-blue);
+    color: var(--accent-blue); /* Texto e ícone ficam azuis */
 }
 
-.download-link a {
-  color: var(--accent-blue);
-  font-weight: 500;
-  text-decoration: underline;
+/* Estilo para o ícone SVG dentro do chip */
+.download-chip svg {
+    width: 18px;
+    height: 18px;
+    /* O 'stroke' é 'currentColor' no SVG, 
+       então ele herdará a cor do 'color' (azul no hover) */
+    flex-shrink: 0; /* Impede que o ícone encolha */
 }
