@@ -65,7 +65,7 @@ export const useChatSocket = () => {
                 setIsAgentResponding(false);
             };
 
-            // --- Lógica de 'onmessage' (CORRIGIDA) ---
+            // --- Lógica de 'onmessage' (Robusta) ---
             socket.onmessage = (event) => {
                 const messageData: IWsMessage = JSON.parse(event.data);
                 console.log("[useChatSocket] Mensagem recebida:", messageData);
@@ -76,7 +76,6 @@ export const useChatSocket = () => {
                     setMessages((prevMessages) => [...prevMessages, messageData]); // Mostra a mensagem
                 }, MIN_TYPING_DELAY);
             };
-            // --- FIM DA MUDANÇA ---
 
             // Função de Limpeza (quando o componente "desmonta")
             return () => {
@@ -97,17 +96,21 @@ export const useChatSocket = () => {
             console.log("[useChatSocket] Enviando mensagem:", message);
             socketRef.current.send(message);
             
-            // --- LÓGICA DE UX ATUALIZADA ---
-            // 1. Botões de Ação (Aprovar/Aceitar/etc.): Não ativam "Digitando..."
-            //    Essas ações são instantâneas, e o backend responde rapidamente.
-            const isButtonAction = message.includes("approve") || message.includes("reject") || message.includes("accept");
-            
-            // 2. Input de Texto (Resumo, Feedback de Revisão, Resposta de Pergunta): 
-            //    Ativam "Digitando..." pois o backend fará um trabalho pesado (LLM).
+            // --- INÍCIO DA MUDANÇA: LÓGICA DE UX ATUALIZADA ---
+            // Verifica se a mensagem é um clique de botão (baseado nos prefixos do Orquestrador).
+            const isButtonAction = 
+                message.startsWith("approve_") ||    // approve_toc, approve_draft
+                message.startsWith("reject_") ||     // reject_toc, reject_draft, reject_ativo
+                message.startsWith("accept_") ||     // accept_ativo
+                message.startsWith("skip_") ||       // skip_pergunta
+                message.startsWith("generate_") ||   // generate_final_doc
+                message.startsWith("final_");        // final_review
+
+            // SÓ ativa "Digitando..." se for uma mensagem de texto (Resumo, Feedback, Resposta)
             if (!isButtonAction) {
                 setIsAgentResponding(true);
             }
-            // --- FIM DA LÓGICA DE UX ATUALIZADA ---
+            // --- FIM DA MUDANÇA ---
 
         } else {
             console.error("[useChatSocket] Não é possível enviar: WebSocket não conectado.");
