@@ -3,7 +3,10 @@ import { useSession } from "../contexts/SessionContext";
 import { useChatSocket } from "../hooks/useChatSocket";
 import type { ISessionStartRequest, IWsMessage } from "../types/chat.types";
 import ReactMarkdown from 'react-markdown';
-import TextareaAutosize from 'react-textarea-autosize'; // <-- 1. IMPORTADO
+import TextareaAutosize from 'react-textarea-autosize';
+// --- INÍCIO DA MUDANÇA ---
+import MermaidModal from "../components/MermaidModal"; // Importa o novo modal
+// --- FIM DA MUDANÇA ---
 
 // --- ÍCONES SVG GLOBAIS (Usados por ambos) ---
 const SunIcon: React.FC = () => (
@@ -33,7 +36,6 @@ const ArrowLeftIcon: React.FC = () => (
     </svg>
 );
 
-// --- NOVO ÍCONE PARA A PÁGINA DE PROMOÇÃO ---
 const BotIcon: React.FC = () => (
     <svg xmlns="http://www.w3.org/2000/svg" width="120" height="120" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
         <path d="M12 8V4H8" />
@@ -44,7 +46,15 @@ const BotIcon: React.FC = () => (
         <path d="M9 13v2" />
     </svg>
 );
-// --- FIM DOS ÍCONES ---
+
+// --- INÍCIO DA MUDANÇA: Novo Ícone Mermaid ---
+const MermaidIcon: React.FC = () => (
+    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+        <path d="M3 7v10a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V7" />
+        <path d="M17 5.1a2 2 0 0 0-3.16.83l-3.34 6.35-3.34-6.35A2 2 0 0 0 3.96 5.1" />
+    </svg>
+);
+// --- FIM DA MUDANÇA ---
 
 
 /**
@@ -53,12 +63,13 @@ const BotIcon: React.FC = () => (
 interface ThemeProps {
     theme: "dark" | "light";
     toggleTheme: () => void;
+    onMermaidOpen: () => void; // Função para abrir o modal
 }
 
 /**
  * Componente: O formulário para iniciar uma nova sessão.
  */
-const StartSessionForm: React.FC<ThemeProps> = ({ theme, toggleTheme }) => {
+const StartSessionForm: React.FC<ThemeProps> = ({ theme, toggleTheme, onMermaidOpen }) => {
     const { startSession, status, error } = useSession();
     const [formData, setFormData] = useState<ISessionStartRequest>({
         tipo_documento: "",
@@ -79,8 +90,12 @@ const StartSessionForm: React.FC<ThemeProps> = ({ theme, toggleTheme }) => {
 
     return (
         <div className="start-form">
-            {/* --- BOTÃO DE TEMA (POSICIONADO PELO CSS .start-form-theme-toggle) --- */}
+            {/* --- INÍCIO DA MUDANÇA: Botão Mermaid adicionado --- */}
             <div className="start-form-theme-toggle">
+                {/* Adiciona o botão de Mermaid aqui */}
+                <button className="icon-button" onClick={onMermaidOpen} title="Abrir Editor Mermaid">
+                    <MermaidIcon />
+                </button>
                 <button className="icon-button" onClick={toggleTheme} title={theme === 'dark' ? "Mudar para Tema Claro" : "Mudar para Tema Escuro"}>
                     {theme === "dark" ? <SunIcon /> : <MoonIcon />}
                 </button>
@@ -89,6 +104,7 @@ const StartSessionForm: React.FC<ThemeProps> = ({ theme, toggleTheme }) => {
 
             <h2>Iniciar Novo Documento</h2>
             <form onSubmit={handleSubmit}>
+                {/* ... (inputs do formulário sem mudanças) ... */}
                 <div>
                     <label htmlFor="codificacao">Codificação (ex: FO-QUA-001)</label>
                     <input
@@ -140,7 +156,7 @@ const StartSessionForm: React.FC<ThemeProps> = ({ theme, toggleTheme }) => {
 /**
  * Componente: A janela principal do chat.
  */
-const ChatWindow: React.FC<ThemeProps> = ({ theme, toggleTheme }) => {
+const ChatWindow: React.FC<ThemeProps> = ({ theme, toggleTheme, onMermaidOpen }) => {
     const {
         messages,
         setMessages,
@@ -154,16 +170,11 @@ const ChatWindow: React.FC<ThemeProps> = ({ theme, toggleTheme }) => {
     const [userMessage, setUserMessage] = useState("");
     const messagesEndRef = useRef<HTMLDivElement>(null);
 
-    // --- LÓGICA DO BOTÃO "VOLTAR" ---
     const handleGoHome = () => {
         window.location.reload();
     };
-    // --- FIM DA LÓGICA DO BOTÃO "VOLTAR" ---
 
-    // --- LÓGICA DO BOTÃO "FINAL" ---
     const isFinal = messages.length > 0 && messages[messages.length - 1].type === "final";
-    // --- FIM DA LÓGICA ---
-
 
     useEffect(() => {
         messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -194,16 +205,12 @@ const ChatWindow: React.FC<ThemeProps> = ({ theme, toggleTheme }) => {
         );
     };
 
-    // --- 2. NOVA FUNÇÃO PARA 'Enter' vs 'Shift+Enter' ---
     const handleKeyPress = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
-        // Se 'Enter' for pressionado SEM 'Shift', envie a mensagem
         if (e.key === 'Enter' && !e.shiftKey) {
-            e.preventDefault(); // Impede a quebra de linha
+            e.preventDefault();
             handleSend();
         }
-        // Se 'Shift' + 'Enter' for pressionado, o textarea fará a quebra de linha (comportamento padrão)
     };
-    // --- FIM DA MUDANÇA ---
 
     // --- ÍCONES SVG (Apenas os específicos do Chat) ---
     const AgentPersona: React.FC = () => (
@@ -267,11 +274,16 @@ const ChatWindow: React.FC<ThemeProps> = ({ theme, toggleTheme }) => {
 
                     <h2>Chat de Geração de Documento</h2>
 
+                    {/* --- INÍCIO DA MUDANÇA: Botão Mermaid adicionado --- */}
                     <div className="header-actions">
+                        <button className="icon-button" onClick={onMermaidOpen} title="Abrir Editor Mermaid">
+                            <MermaidIcon />
+                        </button>
                         <button className="icon-button" onClick={toggleTheme} title={theme === 'dark' ? "Mudar para Tema Claro" : "Mudar para Tema Escuro"}>
                             {theme === "dark" ? <SunIcon /> : <MoonIcon />}
                         </button>
                     </div>
+                    {/* --- FIM DA MUDANÇA --- */}
 
                 </div>
             </div>
@@ -363,7 +375,6 @@ const ChatWindow: React.FC<ThemeProps> = ({ theme, toggleTheme }) => {
 
             <div className="chat-input-wrapper">
                 <div className="chat-input-content">
-                    {/* --- 3. INÍCIO DA MUDANÇA: <input> para <TextareaAutosize> --- */}
                     <div className="chat-input">
                         <TextareaAutosize
                             value={userMessage}
@@ -371,13 +382,12 @@ const ChatWindow: React.FC<ThemeProps> = ({ theme, toggleTheme }) => {
                             onKeyPress={handleKeyPress} // Usa a nova função
                             placeholder={isConnected ? "Digite sua resposta aqui... (Shift+Enter para nova linha)" : (isConnecting ? "Conectando ao chat..." : "Desconectado")}
                             disabled={!isConnected}
-                            maxRows={5} // Define um limite para não crescer infinitamente
+                            maxRows={5}
                         />
                         <button onClick={handleSend} disabled={!isConnected}>
                             Enviar
                         </button>
                     </div>
-                    {/* --- FIM DA MUDANÇA --- */}
                 </div>
             </div>
         </div>
@@ -395,7 +405,12 @@ const ChatPage: React.FC = () => {
     // --- LÓGICA DE TEMA (Centralizada no Pai) ---
     const [theme, setTheme] = useState<"dark" | "light">("dark");
 
+    // --- INÍCIO DA MUDANÇA: Estado do Modal ---
+    const [isMermaidModalOpen, setIsMermaidModalOpen] = useState(false);
+    // --- FIM DA MUDANÇA ---
+
     useEffect(() => {
+        // Aplica o tema salvo no carregamento inicial
         const savedTheme = (localStorage.getItem("chatTheme") as "dark" | "light") || "dark";
         setTheme(savedTheme);
         if (savedTheme === "light") {
@@ -403,16 +418,17 @@ const ChatPage: React.FC = () => {
         } else {
             document.body.classList.remove("light-theme");
         }
-    }, []);
+    }, []); // Executa apenas uma vez no carregamento
 
     useEffect(() => {
+        // Atualiza o body e o localStorage QUANDO o tema mudar
         if (theme === "light") {
             document.body.classList.add("light-theme");
         } else {
             document.body.classList.remove("light-theme");
         }
         localStorage.setItem("chatTheme", theme);
-    }, [theme]);
+    }, [theme]); // Executa sempre que 'theme' mudar
 
     const toggleTheme = () => {
         setTheme(theme === "dark" ? "light" : "dark");
@@ -424,7 +440,11 @@ const ChatPage: React.FC = () => {
             {/* Lógica de renderização existente */}
             {sessionId && status === "connected" ? (
                 // Passa o tema e a função para o ChatWindow
-                <ChatWindow theme={theme} toggleTheme={toggleTheme} />
+                <ChatWindow
+                    theme={theme}
+                    toggleTheme={toggleTheme}
+                    onMermaidOpen={() => setIsMermaidModalOpen(true)} // Passa a função
+                />
             ) : (
                 // --- NOVO LAYOUT DA PÁGINA INICIAL ---
                 <div className="start-page-layout">
@@ -450,12 +470,25 @@ const ChatPage: React.FC = () => {
 
                     <div className="start-page-right">
                         {/* Passa o tema e a função para o StartSessionForm */}
-                        <StartSessionForm theme={theme} toggleTheme={toggleTheme} />
+                        <StartSessionForm
+                            theme={theme}
+                            toggleTheme={toggleTheme}
+                            onMermaidOpen={() => setIsMermaidModalOpen(true)} // Passa a função
+                        />
                     </div>
 
                 </div>
                 // --- FIM DO NOVO LAYOUT ---
             )}
+
+            {/* --- INÍCIO DA MUDANÇA: Renderiza o Modal globalmente --- */}
+            {isMermaidModalOpen && (
+                <MermaidModal
+                    theme={theme}
+                    onClose={() => setIsMermaidModalOpen(false)}
+                />
+            )}
+            {/* --- FIM DA MUDANÇA --- */}
         </>
     );
 };

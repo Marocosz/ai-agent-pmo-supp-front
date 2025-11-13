@@ -1,0 +1,134 @@
+/* ===== OVERLAY ===== */
+.mm-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.75);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 5000;
+}
+
+/* ===== MODAL ===== */
+.mm-content {
+  width: 90%;
+  max-width: 1100px;
+  height: 85%;
+  background: var(--surface-dark);
+  border: 1px solid var(--border-color);
+  border-radius: 12px;
+  display: flex;
+  flex-direction: column;
+}
+
+/* ===== HEADER ===== */
+.mm-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 1.5rem;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.mm-close {
+  background: none;
+  border: none;
+  color: var(--text-secondary);
+  font-size: 2rem;
+  cursor: pointer;
+}
+
+/* ===== BODY ===== */
+.mm-body {
+  display: flex;
+  flex: 1;
+  overflow: hidden;
+}
+
+/* ===== EDITOR ===== */
+.mm-editor {
+  width: 45%;
+  padding: 1rem;
+  display: flex;
+  flex-direction: column;
+  border-right: 1px solid var(--border-color);
+}
+
+.mm-editor textarea {
+  flex: 1;
+  resize: none;
+  background: var(--input-bg);
+  border: 1px solid var(--border-color);
+  color: var(--text-primary);
+  padding: 1rem;
+  border-radius: 8px;
+  font-family: monospace;
+}
+
+/* ===== PREVIEW ===== */
+.mm-preview {
+  width: 55%;
+  padding: 1rem;
+  display: flex;
+  flex-direction: column;
+}
+
+.mm-preview-area {
+  flex: 1;
+  background: var(--background-dark); 
+  border-radius: 8px;
+  overflow: hidden;
+  /* IMPORTANTÍSSIMO */
+  position: relative;
+}
+
+/* Container do SVG real — infinito */
+.mm-svg-container {
+  width: auto;
+  height: auto;
+  display: inline-block;
+}
+
+/* Impede SVG de encaixar ou reduzir */
+.mm-svg-container svg {
+  max-width: none !important;
+  max-height: none !important;
+}
+
+/* ===== ERRO ===== */
+.mm-error {
+  position: absolute;
+  top: 1rem;
+  left: 1rem;
+  background: #700;
+  color: white;
+  padding: 0.5rem 1rem;
+  border-radius: 6px;
+  font-family: monospace;
+}
+
+/* ===== FOOTER ===== */
+.mm-footer {
+  border-top: 1px solid var(--border-color);
+  padding: 1rem;
+  text-align: right;
+}
+
+.mm-download-btn {
+  background: var(--accent-blue);
+  padding: 10px 16px;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.mm-download-btn:disabled {
+  background: #555;
+  cursor: not-allowed;
+}
+
+/* ===== FIX: remover corte do TransformComponent ===== */
+.mm-preview-area > div {
+  overflow: visible !important;
+}
