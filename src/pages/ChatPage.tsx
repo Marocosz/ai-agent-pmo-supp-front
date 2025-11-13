@@ -2,13 +2,43 @@ import React, { useState, useEffect, useRef } from "react";
 import { useSession } from "../contexts/SessionContext";
 import { useChatSocket } from "../hooks/useChatSocket";
 import type { ISessionStartRequest, IWsMessage } from "../types/chat.types";
-import ReactMarkdown from 'react-markdown'; // <-- 1. IMPORTADO
+import ReactMarkdown from 'react-markdown';
+
+// --- ÍCONES SVG GLOBAIS (Usados pelo ChatPage) ---
+const SunIcon: React.FC = () => (
+    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+        <circle cx="12" cy="12" r="5" />
+        <line x1="12" y1="1" x2="12" y2="3" />
+        <line x1="12" y1="21" x2="12" y2="23" />
+        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64" />
+        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78" />
+        <line x1="1" y1="12" x2="3" y2="12" />
+        <line x1="21" y1="12" x2="23" y2="12" />
+        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36" />
+        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22" />
+    </svg>
+);
+
+const MoonIcon: React.FC = () => (
+    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" />
+    </svg>
+);
+
+const ArrowLeftIcon: React.FC = () => (
+    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+        <line x1="19" y1="12" x2="5" y2="12" />
+        <polyline points="12 19 5 12 12 5" />
+    </svg>
+);
+// --- FIM DOS ÍCONES GLOBAIS ---
+
 
 /**
  * Componente: O formulário para iniciar uma nova sessão.
+ * (Agora é um componente "burro", não gerencia mais o tema)
  */
 const StartSessionForm: React.FC = () => {
-    // ... (Este componente permanece 100% igual)
     const { startSession, status, error } = useSession();
     const [formData, setFormData] = useState<ISessionStartRequest>({
         tipo_documento: "",
@@ -78,11 +108,12 @@ const StartSessionForm: React.FC = () => {
     );
 };
 
+
 /**
  * Componente: A janela principal do chat.
+ * (Também é um componente "burro", não gerencia mais o tema ou o botão de voltar)
  */
 const ChatWindow: React.FC = () => {
-    // ... (Hooks, states, handlers, e sub-componentes permanecem 100% iguais)
     const {
         messages,
         setMessages,
@@ -125,6 +156,7 @@ const ChatWindow: React.FC = () => {
         );
     };
 
+    // --- ÍCONES SVG (Apenas os específicos do Chat) ---
     const AgentPersona: React.FC = () => (
         <div className="agent-persona">
             <div className="agent-persona-icon">DC</div>
@@ -153,41 +185,36 @@ const ChatWindow: React.FC = () => {
     );
 
     const DocumentIcon: React.FC = () => (
-        <svg
-            xmlns="http://www.w3.org/2000/svg"
-            width="18"
-            height="18"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-        >
+        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
             <path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z" />
             <polyline points="14 2 14 8 20 8" />
             <line x1="16" y1="13" x2="8" y2="13" />
             <line x1="16" y1="17" x2="8" y2="17" />
             <line x1="10" y1="9" x2="8" y2="9" />
-        </svg>);
+        </svg>
+    );
+    // --- FIM DOS ÍCONES SVG ---
 
     return (
         <div className="chat-window">
+            {/* --- CABEÇALHO LIMPO --- */}
             <div className="chat-header">
                 <div className="chat-header-content">
+                    {/* O botão Voltar agora é global */}
                     <h2>Chat de Geração de Documento</h2>
+                    <div className="header-actions">
+                        {/* O botão Tema agora é global */}
+                    </div>
                 </div>
             </div>
+            {/* --- FIM DO CABEÇALHO --- */}
 
             <div className="message-list">
                 <div className="message-list-content">
-
                     {messages.map((msg, index) => (
-
                         msg.type === 'user' ? (
                             <div key={index} className="message-bubble type-user">
-                                {/* O balão do usuário continua sendo um <p> simples */}
-                                <p>{msg.content}</p>
+                                <ReactMarkdown>{msg.content}</ReactMarkdown>
                             </div>
                         ) : msg.type === 'processing' ? (
                             <div key={index} className="agent-message-block">
@@ -197,22 +224,14 @@ const ChatWindow: React.FC = () => {
                             <div key={index} className="agent-message-block">
                                 <AgentPersona />
                                 <div className={`message-bubble type-${msg.type}`}>
-
-                                    {/* --- 2. AQUI ESTÁ A MUDANÇA --- */}
-                                    {/* Substituímos <p>{msg.content}</p> por isto: */}
-                                    <ReactMarkdown>
-                                        {msg.content}
-                                    </ReactMarkdown>
-                                    {/* --- FIM DA MUDANÇA --- */}
-
-                                    {/* O resto (botões e chip) continua igual */}
+                                    <ReactMarkdown>{msg.content}</ReactMarkdown>
                                     {msg.actions && msg.actions.length > 0 && (
                                         <div className="action-buttons">
                                             {msg.actions.map(action => {
                                                 const isSelected = msg.selectedActionValue === action.value;
                                                 const isOtherActionClicked = msg.selectedActionValue && !isSelected;
 
-                                                let buttonClass = action.value.startsWith("reject") ? "reject" : "";
+                                                let buttonClass = action.value.startsWith("reject") || action.value.startsWith("skip") ? "reject" : "";
                                                 if (isOtherActionClicked) {
                                                     buttonClass += " inactive";
                                                 }
@@ -230,7 +249,6 @@ const ChatWindow: React.FC = () => {
                                             })}
                                         </div>
                                     )}
-
                                     {msg.type === 'final' && msg.file_path && (
                                         <a
                                             href={`${import.meta.env.VITE_API_URL || "http://127.0.0.1:8000"}/v1/download/${msg.file_path}`}
@@ -274,7 +292,7 @@ const ChatWindow: React.FC = () => {
                             value={userMessage}
                             onChange={(e) => setUserMessage(e.target.value)}
                             onKeyPress={(e) => e.key === 'Enter' && handleSend()}
-                            placeholder={isConnected ? "Digite seu resumo aqui..." : (isConnecting ? "Conectando ao chat..." : "Desconectado")}
+                            placeholder={isConnected ? "Digite sua resposta aqui..." : (isConnecting ? "Conectando ao chat..." : "Desconectado")}
                             disabled={!isConnected}
                         />
                         <button onClick={handleSend} disabled={!isConnected}>
@@ -287,20 +305,84 @@ const ChatWindow: React.FC = () => {
     );
 };
 
+
 /**
  * Página principal que decide qual componente mostrar
+ * (Agora controla o estado do tema e o botão de voltar)
  */
 const ChatPage: React.FC = () => {
     const { sessionId, status } = useSession();
 
-    if (sessionId && status === "connected") {
-        return <ChatWindow />;
-    }
+    // --- LÓGICA DE TEMA (Centralizada no Pai) ---
+    const [theme, setTheme] = useState<"dark" | "light">("dark");
 
-    // Envolve o formulário no container para centralizá-lo
+    useEffect(() => {
+        // Aplica o tema salvo no carregamento inicial
+        const savedTheme = (localStorage.getItem("chatTheme") as "dark" | "light") || "dark";
+        setTheme(savedTheme);
+        if (savedTheme === "light") {
+            document.body.classList.add("light-theme");
+        } else {
+            document.body.classList.remove("light-theme");
+        }
+    }, []); // Executa apenas uma vez no carregamento
+
+    useEffect(() => {
+        // Atualiza o body e o localStorage QUANDO o tema mudar
+        if (theme === "light") {
+            document.body.classList.add("light-theme");
+        } else {
+            document.body.classList.remove("light-theme");
+        }
+        localStorage.setItem("chatTheme", theme);
+    }, [theme]); // Executa sempre que 'theme' mudar
+
+    const toggleTheme = () => {
+        setTheme(theme === "dark" ? "light" : "dark");
+    };
+    // --- FIM DA LÓGICA DE TEMA ---
+
+    // --- LÓGICA DE NAVEGAÇÃO (para o botão Voltar) ---
+    const handleGoHome = () => {
+        window.location.reload();
+    };
+    // --- FIM DA LÓGICA DE NAVEGAÇÃO ---
+
     return (
-        <div className="app-container">
-            <StartSessionForm />
+        // Um wrapper simples para os botões globais
+        <div className="app-wrapper">
+
+            {/* --- BOTÃO DE TEMA GLOBAL (FIXO) --- */}
+            <button
+                className="icon-button global-theme-toggle"
+                onClick={toggleTheme}
+                title={theme === 'dark' ? "Mudar para Tema Claro" : "Mudar para Tema Escuro"}
+            >
+                {theme === "dark" ? <SunIcon /> : <MoonIcon />}
+            </button>
+
+            {/* --- BOTÃO VOLTAR GLOBAL (FIXO) --- */}
+            {/* Só aparece se a sessão estiver ativa (ou seja, na tela de chat) */}
+            {sessionId && status === "connected" && (
+                <button
+                    className="icon-button global-back-button"
+                    onClick={handleGoHome}
+                    title="Voltar ao Início"
+                >
+                    <ArrowLeftIcon />
+                </button>
+            )}
+            {/* --- FIM DO BOTÃO --- */}
+
+
+            {/* Lógica de renderização existente */}
+            {sessionId && status === "connected" ? (
+                <ChatWindow />
+            ) : (
+                <div className="app-container">
+                    <StartSessionForm />
+                </div>
+            )}
         </div>
     );
 };
