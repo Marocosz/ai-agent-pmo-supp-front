@@ -3,6 +3,7 @@ import { useSession } from "../contexts/SessionContext";
 import { useChatSocket } from "../hooks/useChatSocket";
 import type { ISessionStartRequest, IWsMessage } from "../types/chat.types";
 import ReactMarkdown from 'react-markdown';
+import TextareaAutosize from 'react-textarea-autosize'; // <-- 1. IMPORTADO
 
 // --- ÍCONES SVG GLOBAIS (Usados por ambos) ---
 const SunIcon: React.FC = () => (
@@ -193,6 +194,17 @@ const ChatWindow: React.FC<ThemeProps> = ({ theme, toggleTheme }) => {
         );
     };
 
+    // --- 2. NOVA FUNÇÃO PARA 'Enter' vs 'Shift+Enter' ---
+    const handleKeyPress = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
+        // Se 'Enter' for pressionado SEM 'Shift', envie a mensagem
+        if (e.key === 'Enter' && !e.shiftKey) {
+            e.preventDefault(); // Impede a quebra de linha
+            handleSend();
+        }
+        // Se 'Shift' + 'Enter' for pressionado, o textarea fará a quebra de linha (comportamento padrão)
+    };
+    // --- FIM DA MUDANÇA ---
+
     // --- ÍCONES SVG (Apenas os específicos do Chat) ---
     const AgentPersona: React.FC = () => (
         <div className="agent-persona">
@@ -231,15 +243,12 @@ const ChatWindow: React.FC<ThemeProps> = ({ theme, toggleTheme }) => {
         </svg>
     );
 
-    // --- INÍCIO DA MUDANÇA: Novo Ícone "Plus" ---
     const PlusIcon: React.FC = () => (
         <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
             <line x1="12" y1="5" x2="12" y2="19" />
             <line x1="5" y1="12" x2="19" y2="12" />
         </svg>
     );
-    // --- FIM DA MUDANÇA ---
-
     // --- FIM DOS ÍCONES SVG ---
 
     return (
@@ -339,8 +348,6 @@ const ChatWindow: React.FC<ThemeProps> = ({ theme, toggleTheme }) => {
                         </div>
                     )}
 
-                    {/* --- INÍCIO DA MUDANÇA: Botão "Criar Novo" --- */}
-                    {/* Aparece no meio (fim da lista) apenas quando a conversa termina */}
                     {isFinal && (
                         <div className="new-document-button-wrapper">
                             <button className="new-document-button" onClick={handleGoHome}>
@@ -349,7 +356,6 @@ const ChatWindow: React.FC<ThemeProps> = ({ theme, toggleTheme }) => {
                             </button>
                         </div>
                     )}
-                    {/* --- FIM DA MUDANÇA --- */}
 
                     <div ref={messagesEndRef} />
                 </div>
@@ -357,19 +363,21 @@ const ChatWindow: React.FC<ThemeProps> = ({ theme, toggleTheme }) => {
 
             <div className="chat-input-wrapper">
                 <div className="chat-input-content">
+                    {/* --- 3. INÍCIO DA MUDANÇA: <input> para <TextareaAutosize> --- */}
                     <div className="chat-input">
-                        <input
-                            type="text"
+                        <TextareaAutosize
                             value={userMessage}
                             onChange={(e) => setUserMessage(e.target.value)}
-                            onKeyPress={(e) => e.key === 'Enter' && handleSend()}
-                            placeholder={isConnected ? "Digite sua resposta aqui..." : (isConnecting ? "Conectando ao chat..." : "Desconectado")}
+                            onKeyPress={handleKeyPress} // Usa a nova função
+                            placeholder={isConnected ? "Digite sua resposta aqui... (Shift+Enter para nova linha)" : (isConnecting ? "Conectando ao chat..." : "Desconectado")}
                             disabled={!isConnected}
+                            maxRows={5} // Define um limite para não crescer infinitamente
                         />
                         <button onClick={handleSend} disabled={!isConnected}>
                             Enviar
                         </button>
                     </div>
+                    {/* --- FIM DA MUDANÇA --- */}
                 </div>
             </div>
         </div>
@@ -388,7 +396,6 @@ const ChatPage: React.FC = () => {
     const [theme, setTheme] = useState<"dark" | "light">("dark");
 
     useEffect(() => {
-        // Aplica o tema salvo no carregamento inicial
         const savedTheme = (localStorage.getItem("chatTheme") as "dark" | "light") || "dark";
         setTheme(savedTheme);
         if (savedTheme === "light") {
@@ -396,17 +403,16 @@ const ChatPage: React.FC = () => {
         } else {
             document.body.classList.remove("light-theme");
         }
-    }, []); // Executa apenas uma vez no carregamento
+    }, []);
 
     useEffect(() => {
-        // Atualiza o body e o localStorage QUANDO o tema mudar
         if (theme === "light") {
             document.body.classList.add("light-theme");
         } else {
             document.body.classList.remove("light-theme");
         }
         localStorage.setItem("chatTheme", theme);
-    }, [theme]); // Executa sempre que 'theme' mudar
+    }, [theme]);
 
     const toggleTheme = () => {
         setTheme(theme === "dark" ? "light" : "dark");

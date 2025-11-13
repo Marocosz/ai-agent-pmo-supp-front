@@ -154,7 +154,6 @@
   height: 100%;
   justify-content: center;
   width: 100%;
-  /* Garante que o formulário preencha o .start-page-right */
 }
 
 .start-form form {
@@ -241,11 +240,9 @@
   flex-shrink: 0;
 }
 
-/* --- MUDANÇA: .chat-header-content é AGORA FULL-WIDTH --- */
 .chat-header-content {
   width: 100%;
-  /* max-width: 800px; <-- REMOVIDO! */
-
+  /* max-width: 800px; <-- Removido para alinhamento total */
   display: grid;
   grid-template-columns: 1fr auto 1fr;
   align-items: center;
@@ -278,6 +275,7 @@
   margin: 0 auto;
 }
 
+/* ... (Estilos de Scrollbar) ... */
 .message-list::-webkit-scrollbar {
   width: 8px;
 }
@@ -299,6 +297,7 @@
 
 
 /* --- 4. Bolhas de Mensagem e Persona --- */
+/* ... (sem mudanças) ... */
 .agent-message-block {
   animation: fadeIn 0.3s ease-out;
 }
@@ -377,6 +376,7 @@
 }
 
 /* --- 5. Botões de Ação (Aceitar/Recusar) --- */
+/* ... (sem mudanças) ... */
 .action-buttons {
   margin-top: 12px;
   display: flex;
@@ -429,6 +429,7 @@
 }
 
 /* --- 6. Indicador de "Digitando" --- */
+/* ... (sem mudanças) ... */
 .typing-indicator {
   display: flex;
   align-items: center;
@@ -459,7 +460,7 @@
   animation: spin 1s linear infinite;
 }
 
-/* --- 7. Barra de Input do Chat --- */
+/* --- 7. Barra de Input do Chat (ATUALIZADA) --- */
 .chat-input-wrapper {
   width: 100%;
   background: var(--background-dark);
@@ -481,22 +482,42 @@
   padding: 5px;
   background-color: var(--surface-dark);
   border-radius: 28px;
+
+  /* --- MUDANÇA: Alinha o botão ao fundo --- */
+  align-items: flex-end;
 }
 
-.chat-input input {
+/* --- MUDANÇA: Substituído .chat-input input por .chat-input textarea --- */
+.chat-input textarea {
   flex-grow: 1;
   background-color: transparent;
   border: none;
   color: var(--text-primary);
   border-radius: 20px;
+  /* (Isso não será visível) */
   padding: 12px 18px;
   font-size: 1rem;
   margin-right: 10px;
+
+  /* --- NOVAS PROPRIEDADES --- */
+  resize: none;
+  /* Esconde o "puxador" de redimensionamento */
+  font-family: inherit;
+  /* Garante que a fonte seja a mesma do resto do app */
+  line-height: 1.5;
+  /* Melhora a leitura em múltiplas linhas */
+  max-height: 150px;
+  /* (Corresponde ao maxRows={5} aprox.) */
+  overflow-y: auto;
+  /* Adiciona scroll se passar de 5 linhas */
 }
 
-.chat-input input:focus {
+.chat-input textarea:focus {
   outline: none;
 }
+
+/* --- FIM DA MUDANÇA --- */
+
 
 .chat-input button {
   padding: 12px 20px;
@@ -508,6 +529,9 @@
   font-size: 1rem;
   font-weight: 500;
   transition: all 0.2s ease;
+
+  /* --- MUDANÇA: Pequeno ajuste para alinhar com o padding do textarea --- */
+  margin-bottom: 5px;
 }
 
 .chat-input button:hover {
@@ -520,6 +544,7 @@
 }
 
 /* --- 8. Download Chip --- */
+/* ... (sem mudanças) ... */
 .download-chip {
   display: inline-flex;
   align-items: center;
@@ -549,6 +574,7 @@
 }
 
 /* --- 9. Estilos do ReactMarkdown --- */
+/* ... (sem mudanças) ... */
 .message-bubble p {
   margin-top: 0;
   margin-bottom: 0;
@@ -579,12 +605,9 @@
   justify-self: end;
 }
 
-/* (Restaurado) Botão de Voltar (Esquerda) */
 .header-back-button {
   grid-column: 1;
-  /* Ocupa a coluna da esquerda */
   justify-self: start;
-  /* Alinha o botão à esquerda */
 }
 
 .icon-button {
@@ -613,22 +636,18 @@
 }
 
 /* --- 11. BOTÃO DE TEMA (FORMULÁRIO) --- */
-/* (Removidos .global-theme-toggle e .global-back-button) */
 .start-form-theme-toggle {
   position: absolute;
   top: 1.5rem;
-  /* Alinha com o padding */
   right: 1.5rem;
-  /* Alinha com o padding */
 }
 
-/* --- 12. NOVO BOTÃO "CRIAR NOVO DOCUMENTO" (FIM DO CHAT) --- */
+/* --- 12. BOTÃO "CRIAR NOVO DOCUMENTO" (FIM DO CHAT) --- */
 .new-document-button-wrapper {
   display: flex;
   justify-content: center;
   width: 100%;
   margin-top: 1.5rem;
-  /* Espaço acima do botão */
   animation: fadeIn 0.3s ease-out;
 }
 
@@ -641,7 +660,6 @@
   color: white;
   border: none;
   border-radius: 8px;
-  /* Um pouco mais quadrado que os botões de ação */
   cursor: pointer;
   font-size: 1rem;
   font-weight: 600;
