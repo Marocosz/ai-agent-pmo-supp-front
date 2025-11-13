@@ -7,6 +7,8 @@
   --input-bg: #2a2a2a;
   --text-primary: #e0e0e0;
   --text-secondary: #aaaaaa;
+
+  /* Cores de Acento (existentes) */
   --accent-blue: #3a86ff;
   --accent-blue-dark: #0056b3;
   --accent-green: #2a9d8f;
@@ -16,11 +18,23 @@
 /* Tema Claro */
 .light-theme {
   --background-dark: #f4f5f7;
+  /* Fundo claro */
   --surface-dark: #ffffff;
+  /* Bolhas brancas */
   --border-color: #e0e0e0;
+  /* Bordas claras */
   --input-bg: #f0f0f0;
+  /* Input claro */
   --text-primary: #121212;
+  /* Texto escuro */
   --text-secondary: #555555;
+  /* Texto secundário escuro */
+
+  /* Cores de acento podem ser as mesmas ou ajustadas */
+  --accent-blue: #3a86ff;
+  --accent-blue-dark: #0056b3;
+  --accent-green: #2a9d8f;
+  --accent-red: #e76f51;
 }
 
 /* --- Fim das Definições de Tema --- */
@@ -52,27 +66,95 @@
 /* --- Fim das Animações --- */
 
 
-/* --- 1. Container Principal (REMOVIDO) --- */
-/* .app-container { ... } (Este estilo não é mais necessário, .start-page-layout assume) */
+/* --- 1. Container Principal (Layout 67/33) --- */
+.start-page-layout {
+  display: flex;
+  flex-direction: row;
+  height: 100vh;
+  width: 100vw;
+  background: var(--background-dark);
+  color: var(--text-primary);
+}
 
+.start-page-left {
+  flex-basis: 67%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 4rem;
+  position: relative;
+  overflow: hidden;
+}
+
+.vertical-divider {
+  flex-basis: 1px;
+  background-color: var(--border-color);
+  height: 100vh;
+}
+
+.start-page-right {
+  flex-basis: 33%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: var(--surface-dark);
+  padding: 2rem;
+}
+
+/* Conteúdo da promoção à esquerda */
+.start-page-promo {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 2rem;
+  max-width: 800px;
+}
+
+.promo-design-line {
+  width: 4px;
+  height: 150px;
+  background: var(--accent-blue);
+  border-radius: 2px;
+}
+
+.promo-image-container {
+  flex-shrink: 0;
+}
+
+.promo-image-container svg {
+  width: 120px;
+  height: 120px;
+  color: var(--accent-blue);
+}
+
+.promo-text-container h3 {
+  font-size: 1.75rem;
+  color: var(--text-primary);
+  margin-top: 0;
+  margin-bottom: 1rem;
+}
+
+.promo-text-container p {
+  font-size: 1rem;
+  color: var(--text-secondary);
+  line-height: 1.6;
+}
 
 /* --- 2. Formulário de Início de Sessão --- */
 .start-form {
   background: var(--surface-dark);
   border: none;
-  /* Borda agora está no divisor */
   border-radius: 12px;
   padding: 2.5rem;
   box-shadow: none;
-  /* Sombra removida para um look mais limpo */
   display: flex;
   flex-direction: column;
   text-align: center;
   position: relative;
   height: 100%;
-  /* Ocupa 100% da div da direita */
   justify-content: center;
-  /* Centraliza o formulário verticalmente */
+  width: 100%;
+  /* Garante que o formulário preencha o .start-page-right */
 }
 
 .start-form form {
@@ -159,9 +241,11 @@
   flex-shrink: 0;
 }
 
+/* --- MUDANÇA: .chat-header-content é AGORA FULL-WIDTH --- */
 .chat-header-content {
   width: 100%;
-  max-width: 800px;
+  /* max-width: 800px; <-- REMOVIDO! */
+
   display: grid;
   grid-template-columns: 1fr auto 1fr;
   align-items: center;
@@ -175,7 +259,6 @@
   grid-column: 2;
 }
 
-/* ... (Estilos da Lista de Mensagens, Bolhas, Botões, etc. - Sem Mudanças) ... */
 
 .message-list {
   flex-grow: 1;
@@ -214,6 +297,8 @@
   background-color: #777;
 }
 
+
+/* --- 4. Bolhas de Mensagem e Persona --- */
 .agent-message-block {
   animation: fadeIn 0.3s ease-out;
 }
@@ -291,6 +376,7 @@
   font-weight: 600;
 }
 
+/* --- 5. Botões de Ação (Aceitar/Recusar) --- */
 .action-buttons {
   margin-top: 12px;
   display: flex;
@@ -342,6 +428,7 @@
   cursor: not-allowed;
 }
 
+/* --- 6. Indicador de "Digitando" --- */
 .typing-indicator {
   display: flex;
   align-items: center;
@@ -372,6 +459,7 @@
   animation: spin 1s linear infinite;
 }
 
+/* --- 7. Barra de Input do Chat --- */
 .chat-input-wrapper {
   width: 100%;
   background: var(--background-dark);
@@ -431,6 +519,7 @@
   cursor: not-allowed;
 }
 
+/* --- 8. Download Chip --- */
 .download-chip {
   display: inline-flex;
   align-items: center;
@@ -459,6 +548,7 @@
   flex-shrink: 0;
 }
 
+/* --- 9. Estilos do ReactMarkdown --- */
 .message-bubble p {
   margin-top: 0;
   margin-bottom: 0;
@@ -492,7 +582,9 @@
 /* (Restaurado) Botão de Voltar (Esquerda) */
 .header-back-button {
   grid-column: 1;
+  /* Ocupa a coluna da esquerda */
   justify-self: start;
+  /* Alinha o botão à esquerda */
 }
 
 .icon-button {
@@ -521,87 +613,46 @@
 }
 
 /* --- 11. BOTÃO DE TEMA (FORMULÁRIO) --- */
-/* (Removido .global-theme-toggle) */
+/* (Removidos .global-theme-toggle e .global-back-button) */
 .start-form-theme-toggle {
   position: absolute;
   top: 1.5rem;
+  /* Alinha com o padding */
   right: 1.5rem;
+  /* Alinha com o padding */
 }
 
-
-/* --- 12. NOVO LAYOUT DA PÁGINA INICIAL --- */
-.start-page-layout {
+/* --- 12. NOVO BOTÃO "CRIAR NOVO DOCUMENTO" (FIM DO CHAT) --- */
+.new-document-button-wrapper {
   display: flex;
-  flex-direction: row;
-  height: 100vh;
-  width: 100vw;
-  background: var(--background-dark);
-  color: var(--text-primary);
-}
-
-.start-page-left {
-  flex-basis: 67%;
-  display: flex;
-  align-items: center;
   justify-content: center;
-  padding: 4rem;
-  position: relative;
-  /* Para a linha de design */
-  overflow: hidden;
+  width: 100%;
+  margin-top: 1.5rem;
+  /* Espaço acima do botão */
+  animation: fadeIn 0.3s ease-out;
 }
 
-.vertical-divider {
-  flex-basis: 1px;
-  background-color: var(--border-color);
-  height: 100vh;
-}
-
-.start-page-right {
-  flex-basis: 33%;
-  display: flex;
+.new-document-button {
+  display: inline-flex;
   align-items: center;
-  justify-content: center;
-  background-color: var(--surface-dark);
-  /* Fundo ligeiramente diferente */
-  padding: 2rem;
-  /* O .start-form será colocado aqui */
-}
-
-/* Conteúdo da promoção à esquerda */
-.start-page-promo {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 2rem;
-  max-width: 800px;
-}
-
-.promo-design-line {
-  width: 4px;
-  height: 150px;
-  background: var(--accent-blue);
-  border-radius: 2px;
-}
-
-.promo-image-container {
-  flex-shrink: 0;
-}
-
-.promo-image-container svg {
-  width: 120px;
-  height: 120px;
-  color: var(--accent-blue);
-}
-
-.promo-text-container h3 {
-  font-size: 1.75rem;
-  color: var(--text-primary);
-  margin-top: 0;
-  margin-bottom: 1rem;
-}
-
-.promo-text-container p {
+  gap: 10px;
+  padding: 12px 20px;
+  background-color: var(--accent-blue);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  /* Um pouco mais quadrado que os botões de ação */
+  cursor: pointer;
   font-size: 1rem;
-  color: var(--text-secondary);
-  line-height: 1.6;
+  font-weight: 600;
+  transition: all 0.2s ease;
+}
+
+.new-document-button:hover {
+  opacity: 0.9;
+}
+
+.new-document-button svg {
+  width: 20px;
+  height: 20px;
 }

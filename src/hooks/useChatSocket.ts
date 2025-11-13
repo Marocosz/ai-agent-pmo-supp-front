@@ -77,7 +77,7 @@ export const useChatSocket = () => {
 
                     // 2. Atualiza a lista de mensagens
                     setMessages((prevMessages) => {
-                        // Filtra (remove) todas as mensagens do tipo 'processing' E 'typing'
+                        // Filtra (remove) todas as mensagens do tipo 'processing'
                         const filteredMessages = prevMessages.filter(
                             (msg) => msg.type !== "processing"
                         );

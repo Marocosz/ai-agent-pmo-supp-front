@@ -153,9 +153,16 @@ const ChatWindow: React.FC<ThemeProps> = ({ theme, toggleTheme }) => {
     const [userMessage, setUserMessage] = useState("");
     const messagesEndRef = useRef<HTMLDivElement>(null);
 
+    // --- LÓGICA DO BOTÃO "VOLTAR" ---
     const handleGoHome = () => {
         window.location.reload();
     };
+    // --- FIM DA LÓGICA DO BOTÃO "VOLTAR" ---
+
+    // --- LÓGICA DO BOTÃO "FINAL" ---
+    const isFinal = messages.length > 0 && messages[messages.length - 1].type === "final";
+    // --- FIM DA LÓGICA ---
+
 
     useEffect(() => {
         messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -223,6 +230,16 @@ const ChatWindow: React.FC<ThemeProps> = ({ theme, toggleTheme }) => {
             <line x1="10" y1="9" x2="8" y2="9" />
         </svg>
     );
+
+    // --- INÍCIO DA MUDANÇA: Novo Ícone "Plus" ---
+    const PlusIcon: React.FC = () => (
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <line x1="12" y1="5" x2="12" y2="19" />
+            <line x1="5" y1="12" x2="19" y2="12" />
+        </svg>
+    );
+    // --- FIM DA MUDANÇA ---
+
     // --- FIM DOS ÍCONES SVG ---
 
     return (
@@ -322,6 +339,18 @@ const ChatWindow: React.FC<ThemeProps> = ({ theme, toggleTheme }) => {
                         </div>
                     )}
 
+                    {/* --- INÍCIO DA MUDANÇA: Botão "Criar Novo" --- */}
+                    {/* Aparece no meio (fim da lista) apenas quando a conversa termina */}
+                    {isFinal && (
+                        <div className="new-document-button-wrapper">
+                            <button className="new-document-button" onClick={handleGoHome}>
+                                <PlusIcon />
+                                <span>Criar Novo Documento</span>
+                            </button>
+                        </div>
+                    )}
+                    {/* --- FIM DA MUDANÇA --- */}
+
                     <div ref={messagesEndRef} />
                 </div>
             </div>
@@ -359,6 +388,7 @@ const ChatPage: React.FC = () => {
     const [theme, setTheme] = useState<"dark" | "light">("dark");
 
     useEffect(() => {
+        // Aplica o tema salvo no carregamento inicial
         const savedTheme = (localStorage.getItem("chatTheme") as "dark" | "light") || "dark";
         setTheme(savedTheme);
         if (savedTheme === "light") {
@@ -366,22 +396,22 @@ const ChatPage: React.FC = () => {
         } else {
             document.body.classList.remove("light-theme");
         }
-    }, []);
+    }, []); // Executa apenas uma vez no carregamento
 
     useEffect(() => {
+        // Atualiza o body e o localStorage QUANDO o tema mudar
         if (theme === "light") {
             document.body.classList.add("light-theme");
         } else {
             document.body.classList.remove("light-theme");
         }
         localStorage.setItem("chatTheme", theme);
-    }, [theme]);
+    }, [theme]); // Executa sempre que 'theme' mudar
 
     const toggleTheme = () => {
         setTheme(theme === "dark" ? "light" : "dark");
     };
     // --- FIM DA LÓGICA DE TEMA ---
-
 
     return (
         <>
