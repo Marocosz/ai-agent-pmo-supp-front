@@ -4,7 +4,7 @@ import { useChatSocket } from "../hooks/useChatSocket";
 import type { ISessionStartRequest, IWsMessage } from "../types/chat.types";
 import ReactMarkdown from 'react-markdown';
 
-// --- ÍCONES SVG GLOBAIS (Usados pelo ChatPage) ---
+// --- ÍCONES SVG GLOBAIS (Usados por ambos) ---
 const SunIcon: React.FC = () => (
     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
         <circle cx="12" cy="12" r="5" />
@@ -31,14 +31,33 @@ const ArrowLeftIcon: React.FC = () => (
         <polyline points="12 19 5 12 12 5" />
     </svg>
 );
-// --- FIM DOS ÍCONES GLOBAIS ---
+
+// --- NOVO ÍCONE PARA A PÁGINA DE PROMOÇÃO ---
+const BotIcon: React.FC = () => (
+    <svg xmlns="http://www.w3.org/2000/svg" width="120" height="120" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+        <path d="M12 8V4H8" />
+        <rect width="16" height="12" x="4" y="8" rx="2" />
+        <path d="M2 14h2" />
+        <path d="M20 14h2" />
+        <path d="M15 13v2" />
+        <path d="M9 13v2" />
+    </svg>
+);
+// --- FIM DOS ÍCONES ---
 
 
 /**
- * Componente: O formulário para iniciar uma nova sessão.
- * (Agora é um componente "burro", não gerencia mais o tema)
+ * Interface para as props que os filhos precisam
  */
-const StartSessionForm: React.FC = () => {
+interface ThemeProps {
+    theme: "dark" | "light";
+    toggleTheme: () => void;
+}
+
+/**
+ * Componente: O formulário para iniciar uma nova sessão.
+ */
+const StartSessionForm: React.FC<ThemeProps> = ({ theme, toggleTheme }) => {
     const { startSession, status, error } = useSession();
     const [formData, setFormData] = useState<ISessionStartRequest>({
         tipo_documento: "",
@@ -59,6 +78,14 @@ const StartSessionForm: React.FC = () => {
 
     return (
         <div className="start-form">
+            {/* --- BOTÃO DE TEMA (POSICIONADO PELO CSS .start-form-theme-toggle) --- */}
+            <div className="start-form-theme-toggle">
+                <button className="icon-button" onClick={toggleTheme} title={theme === 'dark' ? "Mudar para Tema Claro" : "Mudar para Tema Escuro"}>
+                    {theme === "dark" ? <SunIcon /> : <MoonIcon />}
+                </button>
+            </div>
+            {/* --- FIM DA MUDANÇA --- */}
+
             <h2>Iniciar Novo Documento</h2>
             <form onSubmit={handleSubmit}>
                 <div>
@@ -111,9 +138,8 @@ const StartSessionForm: React.FC = () => {
 
 /**
  * Componente: A janela principal do chat.
- * (Também é um componente "burro", não gerencia mais o tema ou o botão de voltar)
  */
-const ChatWindow: React.FC = () => {
+const ChatWindow: React.FC<ThemeProps> = ({ theme, toggleTheme }) => {
     const {
         messages,
         setMessages,
@@ -126,6 +152,10 @@ const ChatWindow: React.FC = () => {
 
     const [userMessage, setUserMessage] = useState("");
     const messagesEndRef = useRef<HTMLDivElement>(null);
+
+    const handleGoHome = () => {
+        window.location.reload();
+    };
 
     useEffect(() => {
         messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -197,14 +227,26 @@ const ChatWindow: React.FC = () => {
 
     return (
         <div className="chat-window">
-            {/* --- CABEÇALHO LIMPO --- */}
+            {/* --- CABEÇALHO ATUALIZADO (com botões de volta e tema) --- */}
             <div className="chat-header">
                 <div className="chat-header-content">
-                    {/* O botão Voltar agora é global */}
+
+                    <button
+                        className="icon-button header-back-button"
+                        onClick={handleGoHome}
+                        title="Voltar ao Início"
+                    >
+                        <ArrowLeftIcon />
+                    </button>
+
                     <h2>Chat de Geração de Documento</h2>
+
                     <div className="header-actions">
-                        {/* O botão Tema agora é global */}
+                        <button className="icon-button" onClick={toggleTheme} title={theme === 'dark' ? "Mudar para Tema Claro" : "Mudar para Tema Escuro"}>
+                            {theme === "dark" ? <SunIcon /> : <MoonIcon />}
+                        </button>
                     </div>
+
                 </div>
             </div>
             {/* --- FIM DO CABEÇALHO --- */}
@@ -308,7 +350,7 @@ const ChatWindow: React.FC = () => {
 
 /**
  * Página principal que decide qual componente mostrar
- * (Agora controla o estado do tema e o botão de voltar)
+ * (Agora controla o estado do tema)
  */
 const ChatPage: React.FC = () => {
     const { sessionId, status } = useSession();
@@ -317,7 +359,6 @@ const ChatPage: React.FC = () => {
     const [theme, setTheme] = useState<"dark" | "light">("dark");
 
     useEffect(() => {
-        // Aplica o tema salvo no carregamento inicial
         const savedTheme = (localStorage.getItem("chatTheme") as "dark" | "light") || "dark";
         setTheme(savedTheme);
         if (savedTheme === "light") {
@@ -325,65 +366,61 @@ const ChatPage: React.FC = () => {
         } else {
             document.body.classList.remove("light-theme");
         }
-    }, []); // Executa apenas uma vez no carregamento
+    }, []);
 
     useEffect(() => {
-        // Atualiza o body e o localStorage QUANDO o tema mudar
         if (theme === "light") {
             document.body.classList.add("light-theme");
         } else {
             document.body.classList.remove("light-theme");
         }
         localStorage.setItem("chatTheme", theme);
-    }, [theme]); // Executa sempre que 'theme' mudar
+    }, [theme]);
 
     const toggleTheme = () => {
         setTheme(theme === "dark" ? "light" : "dark");
     };
     // --- FIM DA LÓGICA DE TEMA ---
 
-    // --- LÓGICA DE NAVEGAÇÃO (para o botão Voltar) ---
-    const handleGoHome = () => {
-        window.location.reload();
-    };
-    // --- FIM DA LÓGICA DE NAVEGAÇÃO ---
 
     return (
-        // Um wrapper simples para os botões globais
-        <div className="app-wrapper">
-
-            {/* --- BOTÃO DE TEMA GLOBAL (FIXO) --- */}
-            <button
-                className="icon-button global-theme-toggle"
-                onClick={toggleTheme}
-                title={theme === 'dark' ? "Mudar para Tema Claro" : "Mudar para Tema Escuro"}
-            >
-                {theme === "dark" ? <SunIcon /> : <MoonIcon />}
-            </button>
-
-            {/* --- BOTÃO VOLTAR GLOBAL (FIXO) --- */}
-            {/* Só aparece se a sessão estiver ativa (ou seja, na tela de chat) */}
-            {sessionId && status === "connected" && (
-                <button
-                    className="icon-button global-back-button"
-                    onClick={handleGoHome}
-                    title="Voltar ao Início"
-                >
-                    <ArrowLeftIcon />
-                </button>
-            )}
-            {/* --- FIM DO BOTÃO --- */}
-
-
+        <>
             {/* Lógica de renderização existente */}
             {sessionId && status === "connected" ? (
-                <ChatWindow />
+                // Passa o tema e a função para o ChatWindow
+                <ChatWindow theme={theme} toggleTheme={toggleTheme} />
             ) : (
-                <div className="app-container">
-                    <StartSessionForm />
+                // --- NOVO LAYOUT DA PÁGINA INICIAL ---
+                <div className="start-page-layout">
+
+                    <div className="start-page-left">
+                        <div className="start-page-promo">
+                            <div className="promo-design-line"></div>
+                            <div className="promo-image-container">
+                                <BotIcon />
+                            </div>
+                            <div className="promo-text-container">
+                                <h3>Assistente de Documentação IA</h3>
+                                <p>
+                                    Bem-vindo ao assistente inteligente da Supporte Logística.
+                                    Descreva o documento que você precisa, e nossos agentes de IA
+                                    irão planear, escrever e formatar um rascunho para si.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div className="vertical-divider"></div>
+
+                    <div className="start-page-right">
+                        {/* Passa o tema e a função para o StartSessionForm */}
+                        <StartSessionForm theme={theme} toggleTheme={toggleTheme} />
+                    </div>
+
                 </div>
+                // --- FIM DO NOVO LAYOUT ---
             )}
-        </div>
+        </>
     );
 };
 
