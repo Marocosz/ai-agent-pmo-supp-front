@@ -1,6 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
 import mermaid from "mermaid";
-import { toPng } from "html-to-image";
 import { TransformWrapper, TransformComponent } from "react-zoom-pan-pinch";
 import "./MermaidModal.css";
 
@@ -18,37 +17,38 @@ const MermaidModal: React.FC<MermaidModalProps> = ({ onClose, theme }) => {
         `graph TD;
 A[Comece aqui] --> B(Cole seu código Mermaid);
 B --> C{Renderizar};
-C --> D[Baixar como PNG];`
+C --> D[Visualizar com Zoom];`
     );
+
     const [debouncedCode, setDebouncedCode] = useState(code);
-
-    // --- MUDANÇA 1: REMOVER O ESTADO DO SVG ---
-    // Não vamos mais guardar o SVG no estado do React.
-    // const [svgCode, setSvgCode] = useState(""); 
-    // --- FIM DA MUDANÇA ---
-
     const [error, setError] = useState("");
+
+    // Referência para o container onde o Mermaid injeta o SVG
     const svgRef = useRef<HTMLDivElement>(null);
 
-    // Debounce (Sem mudanças)
+    // --- LÓGICA UX: Evitar fechar ao arrastar para fora ---
+    const mouseDownTarget = useRef<EventTarget | null>(null);
+
+    // 1. Debounce
     useEffect(() => {
         const t = setTimeout(() => setDebouncedCode(code), 400);
         return () => clearTimeout(t);
     }, [code]);
 
-    // Render Mermaid (Lógica de renderização alterada)
+    // 2. Renderização do Mermaid
     useEffect(() => {
         mermaid.initialize({
             startOnLoad: false,
             theme: theme === "dark" ? "dark" : "default",
+            fontFamily: "sans-serif",
+            securityLevel: 'loose',
         });
 
         const render = async () => {
-            // Se o 'ref' não estiver pronto, não faça nada
             if (!svgRef.current) return;
 
             if (!debouncedCode.trim()) {
-                svgRef.current.innerHTML = ""; // Limpa o div
+                svgRef.current.innerHTML = "";
                 setError("");
                 return;
             }
@@ -57,52 +57,34 @@ C --> D[Baixar como PNG];`
                 const id = "m-" + Math.floor(Math.random() * 999999);
                 const { svg } = await mermaid.render(id, debouncedCode);
 
-                // --- MUDANÇA 2: Manipulação Direta do DOM ---
-                // Em vez de 'setSvgCode(svg)', nós escrevemos
-                // diretamente no 'div' que o 'ref' está a apontar.
-                // Como o React não vê esta mudança, o TransformWrapper não reinicia.
                 svgRef.current.innerHTML = svg;
-                // --- FIM DA MUDANÇA ---
-
                 setError("");
             } catch (err: any) {
-                svgRef.current.innerHTML = ""; // Limpa em caso de erro
-                setError(err.message || "Erro ao renderizar Mermaid");
+                console.error("Mermaid Error:", err);
+                setError("Erro na sintaxe do código. Verifique se o padrão Mermaid está correto.");
             }
         };
 
         render();
-    }, [debouncedCode, theme]); // Reage ao código "atrasado"
+    }, [debouncedCode, theme]);
 
-    // Download (Lógica de 'wrapper' sem mudanças, está correta)
-    const handleDownload = () => {
-        const svgElement = svgRef.current?.querySelector("svg");
-
-        if (!svgElement) return;
-
-        const clone = svgElement.cloneNode(true) as SVGSVGElement;
-        const wrapper = document.createElement("div");
-        wrapper.style.position = "absolute";
-        wrapper.style.top = "-9999px";
-        wrapper.style.background = theme === "dark" ? "#121212" : "#ffffff";
-
-        wrapper.appendChild(clone);
-        document.body.appendChild(wrapper);
-
-        toPng(wrapper)
-            .then((url) => {
-                const link = document.createElement("a");
-                link.download = "fluxograma.png";
-                link.href = url;
-                link.click();
-            })
-            .finally(() => {
-                wrapper.remove();
-            });
+    // --- LÓGICA UX: Handler do clique no overlay ---
+    const handleOverlayClick = (e: React.MouseEvent) => {
+        // Só fecha se o clique COMEÇOU e TERMINOU no overlay
+        if (mouseDownTarget.current === e.currentTarget && e.target === e.currentTarget) {
+            onClose();
+        }
+        mouseDownTarget.current = null;
     };
 
     return (
-        <div className="mm-overlay" onClick={onClose}>
+        <div
+            className="mm-overlay"
+            // Captura onde o clique começou
+            onMouseDown={(e) => mouseDownTarget.current = e.target}
+            // Usa o handler inteligente
+            onClick={handleOverlayClick}
+        >
             <div className="mm-content" onClick={(e) => e.stopPropagation()}>
                 <div className="mm-header">
                     <h3>Renderizador Mermaid</h3>
@@ -115,7 +97,12 @@ C --> D[Baixar como PNG];`
                     {/* COLUNA EDITOR */}
                     <div className="mm-editor">
                         <label>Código Mermaid</label>
-                        <textarea value={code} onChange={(e) => setCode(e.target.value)} />
+                        <textarea
+                            value={code}
+                            onChange={(e) => setCode(e.target.value)}
+                            spellCheck={false}
+                            placeholder="Cole seu código Mermaid aqui..."
+                        />
                     </div>
 
                     {/* COLUNA PREVIEW */}
@@ -126,17 +113,25 @@ C --> D[Baixar como PNG];`
                             <TransformWrapper
                                 initialScale={1}
                                 minScale={0.2}
+                                maxScale={4}
+                                centerOnInit={true}
                                 limitToBounds={false}
                             >
-                                <TransformComponent>
-                                    {/* --- MUDANÇA 3: Div Vazio --- */}
-                                    {/* Este 'div' é agora permanente e vazio. */}
-                                    {/* O 'useEffect' acima irá preenchê-lo com o SVG. */}
+                                <TransformComponent
+                                    wrapperStyle={{ width: "100%", height: "100%" }}
+                                    contentStyle={{ width: "100%", height: "100%" }}
+                                >
                                     <div
                                         ref={svgRef}
                                         className="mm-svg-container"
+                                        style={{
+                                            width: "100%",
+                                            height: "100%",
+                                            display: "flex",
+                                            alignItems: "center",
+                                            justifyContent: "center"
+                                        }}
                                     />
-                                    {/* --- FIM DA MUDANÇA --- */}
                                 </TransformComponent>
                             </TransformWrapper>
 
@@ -145,16 +140,7 @@ C --> D[Baixar como PNG];`
                     </div>
                 </div>
 
-                <div className="mm-footer">
-                    <button
-                        className="mm-download-btn"
-                        onClick={handleDownload}
-                        // Desativa se houver um erro (o svgRef não terá conteúdo)
-                        disabled={!!error || !svgRef.current?.innerHTML}
-                    >
-                        Baixar PNG
-                    </button>
-                </div>
+                {/* Footer removido */}
             </div>
         </div>
     );

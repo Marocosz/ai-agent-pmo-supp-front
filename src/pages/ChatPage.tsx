@@ -106,7 +106,7 @@ const StartSessionForm: React.FC<ThemeProps> = ({ theme, toggleTheme, onMermaidO
             <form onSubmit={handleSubmit}>
                 {/* ... (inputs do formulário sem mudanças) ... */}
                 <div>
-                    <label htmlFor="codificacao">Codificação (ex: FO-QUA-001)</label>
+                    <label htmlFor="codificacao">Codificação</label>
                     <input
                         type="text"
                         id="codificacao"
@@ -130,7 +130,7 @@ const StartSessionForm: React.FC<ThemeProps> = ({ theme, toggleTheme, onMermaidO
                     />
                 </div>
                 <div>
-                    <label htmlFor="tipo_documento">Tipo de Documento (ex: Formulário, PGP)</label>
+                    <label htmlFor="tipo_documento">Tipo de Documento</label>
                     <input
                         type="text"
                         id="tipo_documento"
