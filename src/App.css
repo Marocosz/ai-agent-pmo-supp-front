@@ -99,6 +99,7 @@
   justify-content: center;
   background-color: var(--surface-dark);
   padding: 2rem;
+  position: relative;
 }
 
 /* Conteúdo da promoção à esquerda */
@@ -150,7 +151,6 @@
   display: flex;
   flex-direction: column;
   text-align: center;
-  position: relative;
   height: 100%;
   justify-content: center;
   width: 100%;
@@ -635,13 +635,44 @@
   height: 20px;
 }
 
-/* --- 11. BOTÃO DE TEMA (FORMULÁRIO) --- */
-.start-form-theme-toggle {
+/* --- 11. AÇÕES DO CANTO SUPERIOR (TELA INICIAL) --- */
+/* Container para agrupar botões (Tema, Mermaid, etc) lado a lado */
+.start-header-actions {
   position: absolute;
-  top: 1.5rem;
-  right: 1.5rem;
+  top: 0.8rem;   /* Bem próximo do topo */
+  right: 0.8rem; /* Bem no canto direito */
+  display: flex;
+  align-items: center;
+  gap: 10px;     /* Espaço entre os botões */
+  z-index: 20;
 }
 
+/* Estilo uniforme para os botões deste grupo (redondos) */
+.start-header-actions button {
+  background: transparent; /* Ou var(--surface-dark) se preferir fundo */
+  border: 1px solid var(--border-color);
+  color: var(--text-secondary);
+  border-radius: 50%;
+  width: 38px;   /* Tamanho compacto */
+  height: 38px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  padding: 0;
+}
+
+.start-header-actions button:hover {
+  color: var(--text-primary);
+  border-color: var(--accent-blue);
+  background-color: var(--input-bg);
+}
+
+.start-header-actions button svg {
+  width: 18px;
+  height: 18px;
+}
 /* --- 12. BOTÃO "CRIAR NOVO DOCUMENTO" (FIM DO CHAT) --- */
 .new-document-button-wrapper {
   display: flex;

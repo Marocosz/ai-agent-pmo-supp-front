@@ -69,6 +69,7 @@ interface ThemeProps {
 /**
  * Componente: O formulário para iniciar uma nova sessão.
  */
+// Alteração pontual no componente StartSessionForm
 const StartSessionForm: React.FC<ThemeProps> = ({ theme, toggleTheme, onMermaidOpen }) => {
     const { startSession, status, error } = useSession();
     const [formData, setFormData] = useState<ISessionStartRequest>({
@@ -90,9 +91,9 @@ const StartSessionForm: React.FC<ThemeProps> = ({ theme, toggleTheme, onMermaidO
 
     return (
         <div className="start-form">
-            {/* --- INÍCIO DA MUDANÇA: Botão Mermaid adicionado --- */}
-            <div className="start-form-theme-toggle">
-                {/* Adiciona o botão de Mermaid aqui */}
+            {/* --- ALTERAÇÃO AQUI: Mudamos a classe para 'start-header-actions' --- */}
+            {/* Isso vai alinhar com o novo CSS (flexbox, canto superior direito) */}
+            <div className="start-header-actions">
                 <button className="icon-button" onClick={onMermaidOpen} title="Abrir Editor Mermaid">
                     <MermaidIcon />
                 </button>
@@ -100,7 +101,7 @@ const StartSessionForm: React.FC<ThemeProps> = ({ theme, toggleTheme, onMermaidO
                     {theme === "dark" ? <SunIcon /> : <MoonIcon />}
                 </button>
             </div>
-            {/* --- FIM DA MUDANÇA --- */}
+            {/* --- FIM DA ALTERAÇÃO --- */}
 
             <h2>Iniciar Novo Documento</h2>
             <form onSubmit={handleSubmit}>
