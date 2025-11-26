@@ -1,0 +1,16 @@
+version: '3.8'
+
+services:
+  frontend-test:
+    build: .
+    container_name: teste_frontend_isolado
+    ports:
+      - "5173:5173"
+    volumes:
+      # Mapeia a pasta atual para o container (Hot Reload)
+      - .:/app
+      # Usa o node_modules do container (Linux), ignora o do Windows
+      - /app/node_modules
+    environment:
+      # Aponta para onde o backend estaria (localhost do seu PC)
+      - VITE_API_URL=http://localhost:8005

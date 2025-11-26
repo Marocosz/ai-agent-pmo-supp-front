@@ -1,7 +1,7 @@
 import type { ISessionStartRequest, ISessionStartResponse } from "../types/chat.types";
 
 // Pega a URL da API do .env do frontend (criaremos este .env depois)
-const API_URL = import.meta.env.VITE_API_URL || "http://127.0.0.1:8000";
+const API_URL = import.meta.env.VITE_API_URL || "http://localhost:8005";
 
 /**
  * Chama o endpoint HTTP para iniciar uma nova sessão de chat.
